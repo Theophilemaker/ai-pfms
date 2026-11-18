@@ -224,7 +224,7 @@ function generateCsv(
     }),
     [],
     ['Transactions'],
-    ['Date', 'Reference No', 'Type', 'Category', 'Account', 'Description', 'Currency', 'Amount'],
+    ['Date', 'Reference No', 'Type', 'Category', 'Account', 'Description', 'Tags', 'Currency', 'Amount'],
     ...filteredTxns.map((tx) => [
       tx.date,
       tx.referenceNo,
@@ -232,9 +232,26 @@ function generateCsv(
       tx.category,
       tx.accountName,
       tx.description,
+      tx.tags && tx.tags.length > 0 ? tx.tags.map((t) => `#${t}`).join(' ') : '-',
       tx.currency,
       tx.type === 'income' ? tx.amount : -tx.amount,
     ]),
+    [],
+    ['Monthly Budget Allocations'],
+    ['Category', 'Monthly Limit', 'Spent', 'Remaining', 'Utilization (%)', 'Status'],
+    ...payload.budgets.map((b) => {
+      const spent = expensesByCat[b.category] ?? 0;
+      const remaining = b.monthlyLimit - spent;
+      const pct = b.monthlyLimit > 0 ? Math.round((spent / b.monthlyLimit) * 100) : 0;
+      return [
+        b.category,
+        b.monthlyLimit,
+        spent,
+        remaining,
+        `${pct}%`,
+        spent > b.monthlyLimit ? 'Over Budget' : 'On Track',
+      ];
+    }),
   ];
 
   return toCsvContent(rows);
