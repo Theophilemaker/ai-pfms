@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Offline — AI-PFMS</title>
+  <style>
+    :root {
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --text: #0F172A;
+      --muted: #64748B;
+      --border: #E2E8F0;
+      --primary: #7C3AED;
+      --primary-hover: #6D28D9;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0F1724;
+        --surface: #0B1220;
+        --text: #F8FAFC;
+        --muted: #94A3B8;
+        --border: #263449;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .card {
+      width: 100%;
+      max-width: 460px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+    }
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    h1 { font-size: 22px; font-weight: 700; margin-bottom: 12px; }
+    p { font-size: 15px; line-height: 1.6; color: var(--muted); margin-bottom: 24px; }
+    .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    button {
+      cursor: pointer;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+    }
+    button.primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #FFFFFF;
+    }
+    button.primary:hover { background: var(--primary-hover); }
+  </style>
+</head>
+<body>
+  <main class="card" role="main">
+    <div class="logo">
+      <img src="/assets/icons/icon.svg" alt="AI-PFMS" width="28" height="28" />
+      <span>AI-PFMS</span>
+    </div>
+    <h1 id="title">You're currently offline</h1>
+    <p id="message">
+      You're currently offline. Reconnect to the internet to access your latest financial information securely.
+    </p>
+    <div class="actions">
+      <button type="button" class="primary" id="retryBtn" onclick="window.location.reload()">Retry Connection</button>
+      <button type="button" id="langBtn" onclick="toggleLang()">Kinyarwanda</button>
+    </div>
+  </main>
+  <script>
+    var lang = 'en';
+    function toggleLang() {
+      lang = lang === 'en' ? 'rw' : 'en';
+      document.getElementById('title').textContent = lang === 'rw'
+        ? 'Nta murongo wa murandasi ufite'
+        : "You're currently offline";
+      document.getElementById('message').textContent = lang === 'rw'
+        ? "Ubu nturi kuri murandasi. Ongera uhuze murandasi kugira ngo ugere ku makuru yawe y'imari mu buryo butekanye."
+        : "You're currently offline. Reconnect to the internet to access your latest financial information securely.";
+      document.getElementById('retryBtn').textContent = lang === 'rw' ? 'Ongera ugerageze' : 'Retry Connection';
+      document.getElementById('langBtn').textContent = lang === 'rw' ? 'English' : 'Kinyarwanda';
+    }
+  </script>
+</body>
+</html>

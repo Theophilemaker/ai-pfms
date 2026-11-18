@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="pfmsGrad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#5B21B6"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#pfmsGrad)"/>
+  <rect x="14" y="17" width="28" height="10" rx="4" fill="#DDD6FE"/>
+  <rect x="12" y="21" width="40" height="27" rx="6" fill="#FFFFFF"/>
+  <rect x="38" y="29" width="15" height="11" rx="4" fill="#6D28D9"/>
+  <circle cx="44" cy="34.5" r="2.2" fill="#F8FAFC"/>
+</svg>

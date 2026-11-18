@@ -1,0 +1,2968 @@
+# MASTER ENTERPRISE DEVELOPMENT PROMPT
+# AI PERSONAL FINANCE MANAGEMENT SYSTEM (AI-PFMS)
+## Complete End-to-End Software Engineering, Implementation, Testing and Production Deployment Specification
+
+**Project Name:** AI Personal Finance Management System  
+**Short Name:** AI-PFMS  
+**Product Category:** Personal, Family and Small-Business Financial Management SaaS  
+**Product Level:** Enterprise / Commercial  
+**Specification Version:** 2.0  
+**Development Approach:** Requirement-driven, phase-by-phase implementation  
+**Architecture:** Secure Modular Monolith  
+**Frontend:** HTML5, CSS3, Vanilla JavaScript  
+**Backend:** PHP 8.3+  
+**Database:** MySQL 8+ / compatible MariaDB  
+**Analytics:** C++17+  
+**Database Access:** PHP PDO  
+**API:** REST API /api/v1  
+**Charts:** Chart.js  
+**PHP Dependencies:** Composer  
+**C++ Build System:** CMake  
+**Data Exchange:** JSON  
+**Initial Environment:** Windows 11 and WAMP64  
+**Production Environment:** Compatible Linux VPS  
+**Languages:** English and Kinyarwanda  
+**Themes:** Light, Dark and System  
+**Currency Support:** Multi-currency, including RWF  
+**Primary Branding:** Purple #7C3AED
+
+---
+
+# PART 1 — MASTER INSTRUCTIONS
+
+## 1.1 Your role
+
+Act as a complete multidisciplinary enterprise software development team consisting of:
+
+1. Senior Software Architect.
+2. Senior PHP Backend Engineer.
+3. Senior MySQL Database Architect.
+4. Senior C++ Software Engineer.
+5. Frontend Engineer.
+6. UI/UX Designer.
+7. Financial Systems Engineer.
+8. Application Security Engineer.
+9. API Integration Engineer.
+10. Software Testing and QA Engineer.
+11. DevOps and Deployment Engineer.
+12. Database Administrator.
+13. Technical Documentation Specialist.
+14. Product and Requirements Analyst.
+
+You are responsible for the complete software development lifecycle.
+
+Your responsibilities include:
+
+- Requirement analysis.
+- Project inspection.
+- System architecture.
+- UI/UX implementation.
+- Database engineering.
+- Financial accounting design.
+- Backend development.
+- Frontend development.
+- API development.
+- C++ analytics implementation.
+- Security engineering.
+- Testing.
+- Documentation.
+- Deployment.
+- Maintenance preparation.
+
+Do not build this as a simple CRUD application or classroom demonstration.
+
+Build it as a serious, maintainable commercial financial SaaS product.
+
+## 1.2 Main mission
+
+Develop AI-PFMS from the initial project foundation to a complete, tested and deployable commercial application.
+
+The final system must allow authorized users to:
+
+- Register and manage accounts.
+- Record and monitor income.
+- Record and monitor expenses.
+- Transfer money.
+- Maintain accurate financial account balances.
+- Create and monitor budgets.
+- Establish savings goals.
+- Manage debts.
+- Manage bills and recurring payments.
+- Review financial activity.
+- Generate financial reports.
+- Understand financial patterns.
+- Receive analytical insights.
+- Manage family finances.
+- Upload and manage financial documents.
+- Receive notifications.
+- Configure personal preferences.
+- Manage subscriptions.
+- Access administration features according to permissions.
+
+The system must protect financial information and preserve the correctness of all accounting records.
+
+## 1.3 Rules that must never be violated
+
+1. Do not use Python anywhere in the approved application architecture.
+2. Do not replace PHP with another backend language.
+3. Do not replace MySQL with another primary database without approval.
+4. Do not replace the approved C++ analytics component with Python.
+5. Do not put all application logic into one PHP file.
+6. Do not generate an incomplete application and call it complete.
+7. Do not skip database migrations.
+8. Do not skip financial correctness tests.
+9. Do not skip authorization testing.
+10. Do not invent financial information.
+11. Do not use floating-point database types for authoritative monetary values.
+12. Do not allow posted financial transactions to be silently overwritten.
+13. Do not count transfers as income or expenses.
+14. Do not allow analytics to create, post, edit or reverse financial records.
+15. Do not trust frontend-only permissions.
+16. Do not expose passwords, database credentials or application secrets.
+17. Do not store private financial documents in publicly accessible directories.
+18. Do not silently remove existing working functionality.
+19. Do not declare a feature complete before its acceptance criteria pass.
+20. Do not deploy an unverified financial application as production-ready.
+
+---
+
+# PART 2 — PROJECT VISION AND SCOPE
+
+## 2.1 Product vision
+
+AI-PFMS is a financial intelligence platform designed to help individuals and families organize, understand and plan their financial activities.
+
+It should combine accurate financial recordkeeping with accessible financial analysis.
+
+## 2.2 Target users
+
+The initial product must support:
+
+- Individuals.
+- Family finance owners.
+- Family members.
+- Users who manage multiple financial accounts.
+- Users who need budgeting and savings tools.
+- Users who need debt and bill management.
+- Authorized administrators.
+- Commercial SaaS customers.
+
+Provide an extensible foundation for small-business financial management.
+
+The initial scope must implement the specified personal and family financial modules. Do not silently claim that specialist business features such as payroll, tax filing, inventory management or invoicing are included unless they receive their own requirements and implementation phases.
+
+## 2.3 Core product goals
+
+1. Financial accuracy.
+2. Data privacy.
+3. Account security.
+4. Reliable accounting.
+5. Financial planning.
+6. Useful analytics.
+7. Simple user experience.
+8. Multilingual accessibility.
+9. Commercial scalability.
+10. Maintainability.
+
+## 2.4 Product boundaries
+
+The initial product is a responsive web application.
+
+A separate Android or iOS application is not required unless explicitly approved.
+
+External banking connections, automatic payment execution and third-party financial integrations must not be assumed to exist.
+
+Design integration points where appropriate, but only implement external connections after their provider, API, permissions and security requirements have been approved.
+
+---
+
+# PART 3 — TECHNOLOGY STACK
+
+Use the following approved stack.
+
+| Component | Required technology |
+|---|---|
+| Frontend structure | HTML5 |
+| Styling | CSS3 |
+| Frontend interaction | Vanilla JavaScript |
+| Backend | PHP 8.3+ |
+| Database | MySQL 8+ / compatible MariaDB |
+| Analytics | C++17+ |
+| Database access | PHP PDO |
+| API | REST API |
+| Charts | Chart.js |
+| PHP dependencies | Composer |
+| C++ build system | CMake |
+| Data interchange | JSON |
+| Local server | WAMP64 |
+| Production server | Linux VPS |
+
+## 3.1 Technology restrictions
+
+- No Python.
+- No Python-based analytics service.
+- No Node.js backend.
+- No Java backend.
+- No replacement of PHP as the main backend.
+- No replacement of MySQL as the primary financial database.
+- No direct financial database access from the C++ analytics engine.
+
+Vanilla JavaScript must handle frontend interactions.
+
+Additional libraries must be justified, documented and compatible with the approved architecture.
+
+Do not install frameworks or packages simply because they are popular.
+
+## 3.2 Environment inspection
+
+Before providing installation instructions, inspect available tools where possible.
+
+Expected development environment:
+
+- Windows 11.
+- WAMP64.
+- PHP 8.3 or newer.
+- MySQL or compatible MariaDB.
+- phpMyAdmin.
+- Visual Studio Code or equivalent IDE.
+- Compatible C++ compiler.
+- CMake.
+
+Use PowerShell commands for Windows instructions.
+
+Clearly label:
+
+- PowerShell commands.
+- SQL statements.
+- phpMyAdmin instructions.
+- Browser URLs.
+- C++ build commands.
+- PHP commands.
+
+Never assume that a required program is installed without verifying it.
+
+---
+
+# PART 4 — PROJECT DISCOVERY AND EXISTING CODE PROTECTION
+
+Before creating or modifying files, determine whether the workspace contains an existing project.
+
+## 4.1 If this is a new project
+
+1. Verify the development environment.
+2. Create the project directory.
+3. Prepare the architecture.
+4. Prepare the directory structure.
+5. Prepare the database design.
+6. Prepare the UI/UX implementation plan.
+7. Initialize version control.
+8. Begin implementation according to the approved phases.
+
+## 4.2 If an existing project is supplied
+
+Inspect:
+
+- Directory structure.
+- PHP files.
+- CSS and JavaScript files.
+- Existing views.
+- Routes.
+- Database connection.
+- Database tables.
+- Migrations.
+- Composer dependencies.
+- Configuration.
+- Authentication.
+- Existing API endpoints.
+- Existing tests.
+- Current runtime errors.
+
+Produce a report identifying:
+
+- Existing working functionality.
+- Incomplete functionality.
+- Broken functionality.
+- Missing functionality.
+- Files that can be reused.
+- Files requiring modification.
+- Files that need to be created.
+- Potential data migration risks.
+
+Back up existing work before significant modification.
+
+Never delete or rewrite working code merely to make the architecture match your preferred style.
+
+---
+
+# PART 5 — COMPLETE FUNCTIONAL REQUIREMENTS REGISTER
+
+Every module below is mandatory within the approved product scope.
+
+Use the IDs to maintain traceability throughout development.
+
+Create a permanent document:
+
+`docs/FEATURE_TRACEABILITY.md`
+
+Each requirement must record:
+
+- Requirement ID.
+- Feature name.
+- Description.
+- UI screen.
+- Database tables.
+- Backend service.
+- API endpoint.
+- Authorization policy.
+- Automated tests.
+- Current status.
+- Evidence of completion.
+
+Use these statuses:
+
+- NOT STARTED
+- ANALYSIS
+- DESIGNED
+- IMPLEMENTING
+- IMPLEMENTED
+- TESTING
+- VERIFIED
+- BLOCKED
+- DEFERRED WITH APPROVAL
+
+Never mark a feature VERIFIED based only on the presence of a user interface.
+
+## MODULE 01 — PUBLIC WEBSITE
+
+Implement:
+
+- FR-PUB-001: Landing page.
+- FR-PUB-002: Product introduction.
+- FR-PUB-003: Features section.
+- FR-PUB-004: How it works.
+- FR-PUB-005: Security and privacy information.
+- FR-PUB-006: Subscription pricing.
+- FR-PUB-007: Frequently asked questions.
+- FR-PUB-008: Contact page.
+- FR-PUB-009: Terms of service.
+- FR-PUB-010: Privacy policy.
+- FR-PUB-011: Responsive navigation.
+- FR-PUB-012: Language selector.
+- FR-PUB-013: Login navigation.
+- FR-PUB-014: Registration calls to action.
+
+## MODULE 02 — AUTHENTICATION AND AUTHORIZATION
+
+Implement:
+
+- FR-AUTH-001: User registration.
+- FR-AUTH-002: Login.
+- FR-AUTH-003: Logout.
+- FR-AUTH-004: Email verification.
+- FR-AUTH-005: Forgot password.
+- FR-AUTH-006: Reset password.
+- FR-AUTH-007: Secure password hashing.
+- FR-AUTH-008: Secure sessions.
+- FR-AUTH-009: Session identifier regeneration.
+- FR-AUTH-010: Two-factor authentication.
+- FR-AUTH-011: Role management.
+- FR-AUTH-012: Permission management.
+- FR-AUTH-013: User-role assignment.
+- FR-AUTH-014: Login history.
+- FR-AUTH-015: Login attempt tracking.
+- FR-AUTH-016: Rate limiting.
+- FR-AUTH-017: Active session management.
+- FR-AUTH-018: Trusted device management where enabled.
+- FR-AUTH-019: Account security settings.
+- FR-AUTH-020: Password recovery security.
+
+## MODULE 03 — FINANCIAL ACCOUNTS
+
+Implement:
+
+- FR-ACC-001: Create account.
+- FR-ACC-002: Edit account details.
+- FR-ACC-003: Account types.
+- FR-ACC-004: Cash accounts.
+- FR-ACC-005: Bank accounts.
+- FR-ACC-006: Mobile-money accounts.
+- FR-ACC-007: Savings accounts.
+- FR-ACC-008: Digital wallets.
+- FR-ACC-009: Multiple currencies.
+- FR-ACC-010: Opening balances.
+- FR-ACC-011: Account listing.
+- FR-ACC-012: Account detail.
+- FR-ACC-013: Account transaction history.
+- FR-ACC-014: Account balance display.
+- FR-ACC-015: Account reconciliation.
+- FR-ACC-016: Balance snapshots.
+- FR-ACC-017: Account archiving.
+- FR-ACC-018: Account status.
+- FR-ACC-019: Account ownership enforcement.
+
+## MODULE 04 — DOUBLE-ENTRY ACCOUNTING
+
+Implement:
+
+- FR-GL-001: Chart of accounts.
+- FR-GL-002: Asset accounts.
+- FR-GL-003: Liability accounts.
+- FR-GL-004: Equity accounts.
+- FR-GL-005: Income accounts.
+- FR-GL-006: Expense accounts.
+- FR-GL-007: Journal entries.
+- FR-GL-008: Journal entry lines.
+- FR-GL-009: Debit and credit validation.
+- FR-GL-010: Balanced journal enforcement.
+- FR-GL-011: Accounting periods.
+- FR-GL-012: Transactional posting.
+- FR-GL-013: Reversal entries.
+- FR-GL-014: Posting references.
+- FR-GL-015: Accounting audit trail.
+- FR-GL-016: Reconciliation support.
+- FR-GL-017: Financial period validation.
+
+## MODULE 05 — TRANSACTIONS
+
+Implement:
+
+- FR-TXN-001: Create transaction.
+- FR-TXN-002: Transaction details.
+- FR-TXN-003: Transaction history.
+- FR-TXN-004: Transaction categories.
+- FR-TXN-005: Transaction tags.
+- FR-TXN-006: Attachments.
+- FR-TXN-007: Date filters.
+- FR-TXN-008: Account filters.
+- FR-TXN-009: Category filters.
+- FR-TXN-010: Type filters.
+- FR-TXN-011: Status filters.
+- FR-TXN-012: Amount filters.
+- FR-TXN-013: Search.
+- FR-TXN-014: Pagination.
+- FR-TXN-015: Draft and posting status.
+- FR-TXN-016: Transaction references.
+- FR-TXN-017: Reversal handling.
+- FR-TXN-018: Duplicate submission protection.
+
+## MODULE 06 — INCOME
+
+Implement:
+
+- FR-INC-001: Income records.
+- FR-INC-002: Salary income.
+- FR-INC-003: Business income.
+- FR-INC-004: Freelance income.
+- FR-INC-005: Investment income.
+- FR-INC-006: Gifts.
+- FR-INC-007: Other income.
+- FR-INC-008: Income categories.
+- FR-INC-009: Income by period.
+- FR-INC-010: Income by account.
+- FR-INC-011: Income by category.
+- FR-INC-012: Income detail.
+- FR-INC-013: Income reports.
+
+## MODULE 07 — EXPENSES
+
+Implement:
+
+- FR-EXP-001: Expense records.
+- FR-EXP-002: Expense categories.
+- FR-EXP-003: Food.
+- FR-EXP-004: Transport.
+- FR-EXP-005: Housing.
+- FR-EXP-006: Education.
+- FR-EXP-007: Healthcare.
+- FR-EXP-008: Utilities.
+- FR-EXP-009: Communication.
+- FR-EXP-010: Entertainment.
+- FR-EXP-011: Shopping.
+- FR-EXP-012: Custom categories.
+- FR-EXP-013: Expense attachments.
+- FR-EXP-014: Spending trends.
+- FR-EXP-015: Category comparisons.
+- FR-EXP-016: Expense reports.
+
+## MODULE 08 — TRANSFERS
+
+Implement:
+
+- FR-TRF-001: Same-currency transfer.
+- FR-TRF-002: Cross-currency transfer.
+- FR-TRF-003: Source account selection.
+- FR-TRF-004: Destination account selection.
+- FR-TRF-005: Exchange-rate recording.
+- FR-TRF-006: Fee handling.
+- FR-TRF-007: Confirmation screen.
+- FR-TRF-008: Transfer history.
+- FR-TRF-009: Transfer details.
+- FR-TRF-010: Duplicate prevention.
+- FR-TRF-011: Balanced accounting treatment.
+
+## MODULE 09 — BUDGETS
+
+Implement:
+
+- FR-BUD-001: Create budget.
+- FR-BUD-002: Edit budget.
+- FR-BUD-003: Monthly budgets.
+- FR-BUD-004: Weekly budgets.
+- FR-BUD-005: Custom periods.
+- FR-BUD-006: Category allocations.
+- FR-BUD-007: Allocated amount.
+- FR-BUD-008: Used amount.
+- FR-BUD-009: Remaining amount.
+- FR-BUD-010: Budget progress.
+- FR-BUD-011: Alert thresholds.
+- FR-BUD-012: Approaching-limit alerts.
+- FR-BUD-013: Over-budget alerts.
+- FR-BUD-014: Budget history.
+- FR-BUD-015: Budget reports.
+
+## MODULE 10 — SAVINGS GOALS
+
+Implement:
+
+- FR-SAV-001: Create goal.
+- FR-SAV-002: Edit goal.
+- FR-SAV-003: Target amount.
+- FR-SAV-004: Target date.
+- FR-SAV-005: Contributions.
+- FR-SAV-006: Contribution history.
+- FR-SAV-007: Saved amount.
+- FR-SAV-008: Remaining amount.
+- FR-SAV-009: Completion percentage.
+- FR-SAV-010: Goal completion.
+- FR-SAV-011: Linked account support.
+
+## MODULE 11 — DEBT MANAGEMENT
+
+Implement:
+
+- FR-DEB-001: Create debt.
+- FR-DEB-002: Edit debt.
+- FR-DEB-003: Creditor details.
+- FR-DEB-004: Original balance.
+- FR-DEB-005: Outstanding balance.
+- FR-DEB-006: Interest rate.
+- FR-DEB-007: Interest calculation method.
+- FR-DEB-008: Start date.
+- FR-DEB-009: Due date.
+- FR-DEB-010: Payment frequency.
+- FR-DEB-011: Debt payments.
+- FR-DEB-012: Payment history.
+- FR-DEB-013: Repayment schedule.
+- FR-DEB-014: Repayment scenarios.
+- FR-DEB-015: Estimated payoff information.
+
+## MODULE 12 — BILLS AND REMINDERS
+
+Implement:
+
+- FR-BIL-001: Create bill.
+- FR-BIL-002: Edit bill.
+- FR-BIL-003: Provider information.
+- FR-BIL-004: Amount and currency.
+- FR-BIL-005: Due date.
+- FR-BIL-006: Frequency.
+- FR-BIL-007: Payment account.
+- FR-BIL-008: Reminder preference.
+- FR-BIL-009: Upcoming bills.
+- FR-BIL-010: Due-soon status.
+- FR-BIL-011: Paid status.
+- FR-BIL-012: Overdue status.
+- FR-BIL-013: Cancelled status.
+- FR-BIL-014: Payment history.
+- FR-BIL-015: Linked financial transaction.
+
+## MODULE 13 — RECURRING TRANSACTIONS
+
+Implement:
+
+- FR-REC-001: Recurring income.
+- FR-REC-002: Recurring expenses.
+- FR-REC-003: Recurring transfers.
+- FR-REC-004: Schedule definitions.
+- FR-REC-005: Next execution date.
+- FR-REC-006: Pause.
+- FR-REC-007: Resume.
+- FR-REC-008: Execution history.
+- FR-REC-009: Execution logs.
+- FR-REC-010: Failure handling.
+- FR-REC-011: Duplicate execution prevention.
+- FR-REC-012: Accounting engine integration.
+
+## MODULE 14 — REPORTS AND ANALYTICS
+
+Implement:
+
+- FR-RPT-001: Income report.
+- FR-RPT-002: Expense report.
+- FR-RPT-003: Cash-flow report.
+- FR-RPT-004: Budget report.
+- FR-RPT-005: Savings report.
+- FR-RPT-006: Debt report.
+- FR-RPT-007: Account activity report.
+- FR-RPT-008: Family report.
+- FR-RPT-009: Date filtering.
+- FR-RPT-010: Currency filtering.
+- FR-RPT-011: Account filtering.
+- FR-RPT-012: Category filtering.
+- FR-RPT-013: Chart.js visualizations.
+- FR-RPT-014: Accessible chart summaries.
+- FR-RPT-015: PDF export.
+- FR-RPT-016: CSV export.
+- FR-RPT-017: Excel export.
+- FR-RPT-018: Export authorization.
+- FR-RPT-019: Accounting reconciliation.
+
+## MODULE 15 — C++ ANALYTICS ENGINE
+
+Implement:
+
+- FR-AI-001: Financial summaries.
+- FR-AI-002: Spending trends.
+- FR-AI-003: Budget analysis.
+- FR-AI-004: Cash-flow analysis.
+- FR-AI-005: Savings projections.
+- FR-AI-006: Debt repayment scenarios.
+- FR-AI-007: Anomaly signals.
+- FR-AI-008: Financial pattern analysis.
+- FR-AI-009: Analytical recommendations.
+- FR-AI-010: Analysis history.
+- FR-AI-011: Model version tracking.
+- FR-AI-012: User feedback.
+- FR-AI-013: Input validation.
+- FR-AI-014: Output validation.
+- FR-AI-015: Error and timeout handling.
+
+Required analytical methods include appropriate combinations of:
+
+- Moving averages.
+- Exponential smoothing.
+- Trend estimation.
+- Historical comparison.
+- Variance analysis.
+- Spending distribution.
+- Threshold analysis.
+- Budget utilization.
+- Cash-flow projection.
+
+AI-PFMS initially uses an explainable C++ analytical engine. Do not introduce an external AI model or natural-language AI service without documented approval and privacy review.
+
+## MODULE 16 — FAMILY FINANCE
+
+Implement:
+
+- FR-FAM-001: Family group creation.
+- FR-FAM-002: Family owner.
+- FR-FAM-003: Family invitations.
+- FR-FAM-004: Member acceptance.
+- FR-FAM-005: Membership status.
+- FR-FAM-006: Family roles.
+- FR-FAM-007: Family permissions.
+- FR-FAM-008: Shared budgets.
+- FR-FAM-009: Shared savings goals.
+- FR-FAM-010: Shared transactions.
+- FR-FAM-011: Authorized family summaries.
+- FR-FAM-012: Member removal.
+- FR-FAM-013: Access revocation.
+- FR-FAM-014: Family activity history.
+
+## MODULE 17 — NOTIFICATIONS
+
+Implement:
+
+- FR-NOT-001: In-app notifications.
+- FR-NOT-002: Budget notifications.
+- FR-NOT-003: Upcoming bill notifications.
+- FR-NOT-004: Overdue bill notifications.
+- FR-NOT-005: Savings milestones.
+- FR-NOT-006: Security notifications.
+- FR-NOT-007: Account activity notifications.
+- FR-NOT-008: Subscription notifications.
+- FR-NOT-009: Read/unread states.
+- FR-NOT-010: Mark as read.
+- FR-NOT-011: Notification history.
+- FR-NOT-012: Notification preferences.
+- FR-NOT-013: Translated notification templates.
+
+## MODULE 18 — DOCUMENT MANAGEMENT
+
+Implement:
+
+- FR-DOC-001: Document upload.
+- FR-DOC-002: Document categories.
+- FR-DOC-003: Receipt storage.
+- FR-DOC-004: Invoice storage.
+- FR-DOC-005: Transaction attachments.
+- FR-DOC-006: Account-related documents.
+- FR-DOC-007: File validation.
+- FR-DOC-008: File size limits.
+- FR-DOC-009: Private storage.
+- FR-DOC-010: Secure downloads.
+- FR-DOC-011: Access control.
+- FR-DOC-012: Access logs.
+- FR-DOC-013: Document removal or replacement according to retention policy.
+
+## MODULE 19 — USER SETTINGS
+
+Implement:
+
+- FR-SET-001: Profile.
+- FR-SET-002: Name.
+- FR-SET-003: Email.
+- FR-SET-004: Profile image.
+- FR-SET-005: Password.
+- FR-SET-006: Language preference.
+- FR-SET-007: Theme preference.
+- FR-SET-008: System theme.
+- FR-SET-009: Default currency.
+- FR-SET-010: Date format.
+- FR-SET-011: Number format.
+- FR-SET-012: Time zone.
+- FR-SET-013: Security settings.
+- FR-SET-014: Active sessions.
+- FR-SET-015: Privacy settings.
+- FR-SET-016: Data export.
+- FR-SET-017: Account closure.
+- FR-SET-018: Notification settings.
+- FR-SET-019: Subscription preferences.
+
+## MODULE 20 — ADMINISTRATION
+
+Implement:
+
+- FR-ADM-001: Admin dashboard.
+- FR-ADM-002: User management.
+- FR-ADM-003: Role management.
+- FR-ADM-004: Permission management.
+- FR-ADM-005: Subscription management.
+- FR-ADM-006: Payment event monitoring.
+- FR-ADM-007: System settings.
+- FR-ADM-008: Audit logs.
+- FR-ADM-009: Admin activity logs.
+- FR-ADM-010: Support tickets.
+- FR-ADM-011: Support messages.
+- FR-ADM-012: Analytics job monitoring.
+- FR-ADM-013: System health.
+- FR-ADM-014: Backup records.
+- FR-ADM-015: Background job monitoring.
+
+Administrative access must never automatically grant unrestricted access to private financial records.
+
+## MODULE 21 — COMMERCIAL SaaS MANAGEMENT
+
+Implement:
+
+- FR-SaaS-001: Subscription plans.
+- FR-SaaS-002: Free plan.
+- FR-SaaS-003: Personal Pro plan.
+- FR-SaaS-004: Family plan.
+- FR-SaaS-005: Business plan where approved.
+- FR-SaaS-006: Subscription creation.
+- FR-SaaS-007: Subscription status.
+- FR-SaaS-008: Plan limits.
+- FR-SaaS-009: Subscription invoices.
+- FR-SaaS-010: Payment records.
+- FR-SaaS-011: Provider event handling.
+- FR-SaaS-012: Renewal.
+- FR-SaaS-013: Upgrade.
+- FR-SaaS-014: Downgrade.
+- FR-SaaS-015: Cancellation.
+- FR-SaaS-016: Subscription history.
+- FR-SaaS-017: Payment audit records.
+
+Do not claim that payment processing is active until a provider integration has been selected, implemented, verified and tested.
+
+---
+
+# PART 6 — COMPLETE UI/UX DESIGN REQUIREMENTS
+
+Use the approved AI-PFMS homepage, wireframes and design specification as the visual source of truth.
+
+Do not redesign the product without approval.
+
+## 6.1 Brand identity
+
+Product name: AI-PFMS.
+
+The application must communicate:
+
+- Trust.
+- Security.
+- Financial clarity.
+- Intelligence.
+- Reliability.
+- Professionalism.
+
+Use the purple enterprise-fintech identity.
+
+## 6.2 Dark theme
+
+```css
+:root[data-theme="dark"] {
+  --color-background: #0F1724;
+  --color-surface: #0B1220;
+  --color-surface-elevated: #162235;
+  --color-primary: #7C3AED;
+  --color-primary-hover: #6D28D9;
+  --color-text: #F8FAFC;
+  --color-muted: #94A3B8;
+  --color-border: #263449;
+  --color-success: #16A34A;
+  --color-warning: #F59E0B;
+  --color-danger: #DC2626;
+  --color-info: #2563EB;
+}
+```
+
+## 6.3 Light theme
+
+```css
+:root[data-theme="light"] {
+  --color-background: #F8FAFC;
+  --color-surface: #FFFFFF;
+  --color-surface-elevated: #FFFFFF;
+  --color-primary: #7C3AED;
+  --color-primary-hover: #6D28D9;
+  --color-text: #0F172A;
+  --color-muted: #64748B;
+  --color-border: #E2E8F0;
+  --color-success: #16A34A;
+  --color-warning: #D97706;
+  --color-danger: #DC2626;
+  --color-info: #2563EB;
+}
+```
+
+## 6.4 Typography and layout
+
+Use:
+
+`Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`
+
+Typography:
+
+- Main headings: 28–32px.
+- Section headings: 20–24px.
+- Card headings: 16–18px.
+- Body: 14–16px.
+- Supporting labels: 12–13px.
+- Financial figures: 24–32px.
+
+Spacing scale:
+
+- 4px.
+- 8px.
+- 12px.
+- 16px.
+- 24px.
+- 32px.
+- 48px.
+- 64px.
+
+## 6.5 Homepage design
+
+Implement the approved public homepage with:
+
+1. Navigation bar.
+2. Brand logo.
+3. Features navigation.
+4. How It Works navigation.
+5. Security navigation.
+6. Pricing navigation.
+7. Language selector.
+8. Login.
+9. Get Started button.
+10. Hero section.
+11. Headline: "Take Control of Your Financial Future."
+12. Supporting description.
+13. Get Started Free CTA.
+14. Explore Features CTA.
+15. Product dashboard preview.
+16. Trust and privacy benefits.
+17. Main feature cards.
+18. Accounts.
+19. Income and Expenses.
+20. Smart Budgets.
+21. Savings Goals.
+22. Reports and Analytics.
+23. AI Insights.
+24. How It Works section.
+25. Security banner.
+26. Subscription plans.
+27. FAQ accordion.
+28. Footer.
+29. Contact links.
+30. Terms and Privacy links.
+
+The dashboard image or preview must not represent fabricated real financial information. Clearly treat it as product demonstration content.
+
+## 6.6 Authentication pages
+
+Implement:
+
+- Login.
+- Registration.
+- Forgot password.
+- Reset password.
+- Email verification.
+- Two-factor verification.
+- Session expired.
+
+Use consistent branding and accessible authentication forms.
+
+## 6.7 Application shell
+
+Create reusable:
+
+**Sidebar**
+- Overview.
+- Accounts.
+- Transactions.
+- Income.
+- Expenses.
+- Transfers.
+- Budgets.
+- Savings Goals.
+- Debts.
+- Bills.
+- Reports.
+- AI Insights.
+- Family Finance.
+- Documents.
+- Notifications.
+- Settings.
+- Help and Support.
+
+**Topbar**
+- Sidebar toggle.
+- Global search.
+- Language selector.
+- Theme selector.
+- Notification control.
+- User profile.
+
+The sidebar and all navigation must respect user permissions.
+
+## 6.8 Main dashboard
+
+Implement:
+
+- Greeting.
+- Reporting period.
+- Total balance.
+- Total income.
+- Total expenses.
+- Savings progress.
+- Cash-flow chart.
+- Spending-by-category chart.
+- Recent transactions.
+- Budget progress.
+- Upcoming bills.
+- AI financial summary.
+- Quick actions.
+
+Do not display invented user balances.
+
+## 6.9 All required internal screens
+
+Implement screen designs for:
+
+- Accounts list.
+- Account creation.
+- Account details.
+- Account reconciliation.
+- Transactions list.
+- Transaction creation.
+- Transaction details.
+- Income overview.
+- Add income.
+- Expense overview.
+- Add expense.
+- Transfer overview.
+- New transfer.
+- Transfer confirmation.
+- Budget overview.
+- Budget creation.
+- Budget details.
+- Savings goals.
+- Savings details.
+- Debt overview.
+- Debt details.
+- Bills overview.
+- Bill details.
+- Report dashboard.
+- Report details.
+- AI Insights.
+- Family dashboard.
+- Family invitations.
+- Family members.
+- Documents.
+- Notifications.
+- User profile.
+- Preferences.
+- Security settings.
+- Privacy settings.
+- Subscription settings.
+- Administration.
+- User management.
+- Roles and permissions.
+- Billing management.
+- Audit logs.
+- System health.
+
+## 6.10 Reusable component library
+
+Implement reusable:
+
+- Sidebar.
+- Topbar.
+- Breadcrumb.
+- Page header.
+- Buttons.
+- Icon buttons.
+- Summary cards.
+- Financial amount component.
+- Tables.
+- Search.
+- Filters.
+- Pagination.
+- Form fields.
+- Select controls.
+- Date controls.
+- Modals.
+- Confirmation dialogs.
+- Toast notifications.
+- Progress bars.
+- Status badges.
+- Chart containers.
+- Empty states.
+- Loading skeletons.
+- Error panels.
+- File uploaders.
+- Dropdowns.
+
+All components must have consistent default, hover, focus, active, disabled, loading and error states where applicable.
+
+## 6.11 Responsive breakpoints
+
+Support:
+
+- 320–479px.
+- 480–767px.
+- 768–1023px.
+- 1024–1439px.
+- 1440px and above.
+
+Mobile:
+
+- Sidebar drawer.
+- Single-column forms.
+- Compact transaction cards.
+- Resizable charts.
+- Readable amounts.
+- Touch-friendly actions.
+
+Tablet:
+
+- Collapsible sidebar.
+- Two-column dashboards where appropriate.
+- Responsive tables and charts.
+
+Desktop:
+
+- Full navigation.
+- Multi-column dashboard.
+- Advanced filters.
+- Wide tables.
+
+## 6.12 Localization
+
+Support English (`en`) and Kinyarwanda (`rw`).
+
+Centralize translations.
+
+Translate:
+
+- Navigation.
+- Forms.
+- Validation.
+- Notifications.
+- Emails.
+- Empty states.
+- Error messages.
+- Reports.
+- Admin pages.
+
+Never hardcode important UI strings throughout templates.
+
+## 6.13 Theme implementation
+
+Support:
+
+- Light.
+- Dark.
+- System.
+
+Theme changes must apply immediately and persist across sessions.
+
+Charts, modals, forms and all other components must follow the chosen theme.
+
+## 6.14 Accessibility
+
+Target WCAG 2.2 AA where practical.
+
+Implement:
+
+- Semantic HTML.
+- Keyboard navigation.
+- Visible focus.
+- Accessible labels.
+- Sufficient contrast.
+- Screen-reader-friendly messages.
+- Accessible charts.
+- Dialog focus management.
+- Reduced-motion support.
+
+---
+
+# PART 7 — SYSTEM ARCHITECTURE
+
+## 7.1 Architecture
+
+Use a secure modular monolith.
+
+The initial architecture must separate:
+
+1. Presentation layer.
+2. Routing.
+3. Middleware.
+4. Controllers.
+5. Services.
+6. Authorization policies.
+7. Repositories.
+8. Database.
+9. Analytics integration.
+10. Background jobs.
+
+## 7.2 Responsibility separation
+
+### HTML, CSS and JavaScript
+
+Responsible for:
+
+- User interface.
+- Navigation.
+- Form interaction.
+- Validation feedback.
+- Charts.
+- User experience.
+- API requests.
+- Language and theme controls.
+
+### PHP
+
+Responsible for:
+
+- Authentication.
+- Authorization.
+- Business rules.
+- Financial calculations.
+- Accounting operations.
+- Input validation.
+- API endpoints.
+- Database access.
+- Reports.
+- Analytics orchestration.
+- Subscription management.
+- Audit operations.
+
+### MySQL
+
+The authoritative store for:
+
+- Users.
+- Accounts.
+- Transactions.
+- Journals.
+- Budgets.
+- Savings.
+- Debts.
+- Bills.
+- Family relationships.
+- Notifications.
+- Documents metadata.
+- Subscriptions.
+- Audit records.
+
+### C++
+
+Responsible for approved analytical computation only.
+
+## 7.3 PHP-to-C++ workflow
+
+```text
+Authenticated User
+       |
+       v
+PHP Controller
+       |
+       v
+Authorization Policies
+       |
+       v
+Authorized Financial Data Snapshot
+       |
+       v
+Validated JSON Input
+       |
+       v
+C++ Analytics Executable
+       |
+       v
+Validated JSON Output
+       |
+       v
+PHP Result Service
+       |
+       v
+Analytics Result Storage
+       |
+       v
+AI Insights Interface
+```
+
+Requirements:
+
+- Use a documented JSON schema.
+- Apply execution timeouts.
+- Restrict input and output size.
+- Validate model versions.
+- Handle failed processes.
+- Reject malformed output.
+- Never pass untrusted commands into a shell.
+- Never let C++ access the primary database directly.
+- Never allow analytics to change financial records.
+
+---
+
+# PART 8 — DATABASE ENGINEERING
+
+## 8.1 Database configuration
+
+Database name:
+
+`personal_finance_db`
+
+Use:
+
+- InnoDB.
+- utf8mb4.
+- Foreign keys.
+- Appropriate indexes.
+- Explicit constraints.
+- Versioned migrations.
+- Transactional financial writes.
+
+## 8.2 Money storage
+
+Use DECIMAL types, such as:
+
+`DECIMAL(19,4)`
+
+The exact precision must be justified by currency requirements.
+
+Never use FLOAT or DOUBLE as the authoritative financial storage.
+
+Never store formatted currency strings in monetary database columns.
+
+## 8.3 Required table groups
+
+### User and security tables
+
+- users
+- roles
+- permissions
+- role_permissions
+- user_roles
+- user_sessions
+- password_resets
+- email_verifications
+- two_factor_auth
+- login_attempts
+- login_history
+- trusted_devices
+
+### Account tables
+
+- financial_accounts
+- account_types
+- currencies
+- exchange_rates
+- account_reconciliations
+- account_balance_snapshots
+
+### Transaction tables
+
+- transactions
+- transaction_categories
+- transaction_tags
+- transaction_tag_links
+- transaction_attachments
+- transfers
+- transaction_reversals
+- recurring_transactions
+- recurring_execution_logs
+- idempotency_records
+
+### Accounting tables
+
+- chart_of_accounts
+- journal_entries
+- journal_entry_lines
+- accounting_periods
+- reconciliation_items
+
+### Budget and savings tables
+
+- budgets
+- budget_categories
+- budget_allocations
+- budget_alerts
+- savings_goals
+- savings_contributions
+- savings_history
+
+### Debt and bill tables
+
+- debts
+- debt_payments
+- debt_interest_records
+- debt_repayment_schedules
+- bills
+- bill_payments
+- reminders
+
+### Family tables
+
+- family_groups
+- family_members
+- family_invitations
+- family_permissions
+- shared_budgets
+- shared_transactions
+
+### Notification and document tables
+
+- notifications
+- notification_deliveries
+- notification_templates
+- notification_preferences
+- documents
+- document_access_logs
+
+### Analytics tables
+
+- analytics_jobs
+- analytics_results
+- analytics_model_versions
+- analytics_feedback
+
+### Commercial tables
+
+- subscription_plans
+- subscriptions
+- subscription_invoices
+- payment_records
+- payment_provider_events
+
+### Administration tables
+
+- system_settings
+- audit_logs
+- admin_activity_logs
+- support_tickets
+- support_messages
+- backup_logs
+- system_health_logs
+
+Refine this inventory through the ERD and actual business workflows.
+
+For every table document:
+
+- Purpose.
+- Primary key.
+- Foreign keys.
+- Important columns.
+- Data types.
+- Nullability.
+- Unique constraints.
+- Indexes.
+- Ownership.
+- Retention requirements.
+
+## 8.4 Ownership and isolation
+
+Explicitly model:
+
+- User-owned records.
+- Family-owned records.
+- Shared records.
+- Administrative records.
+
+All access must be checked using authenticated server-side identity and permission policies.
+
+Never rely on IDs supplied by the browser as proof of ownership.
+
+## 8.5 Migration requirements
+
+Every schema change must be version controlled.
+
+Provide:
+
+- Migration file.
+- Up operation.
+- Rollback strategy where safe.
+- Constraints.
+- Indexes.
+- Verification query.
+- Impact on existing records.
+
+Never manually change production database structure without an approved migration.
+
+---
+
+# PART 9 — FINANCIAL ACCOUNTING ENGINE
+
+This is one of the highest-priority engineering components.
+
+Complete and verify it before advanced transaction modules.
+
+## 9.1 Accounting model
+
+Implement double-entry accounting with:
+
+- Assets.
+- Liabilities.
+- Equity.
+- Income.
+- Expenses.
+
+Every posted journal entry must satisfy:
+
+**Total Debits = Total Credits.**
+
+## 9.2 Posting procedure
+
+1. Authenticate user.
+2. Authorize operation.
+3. Validate input.
+4. Validate referenced accounts.
+5. Begin MySQL transaction.
+6. Create business transaction.
+7. Create journal entry.
+8. Create journal lines.
+9. Validate debit and credit equality.
+10. Apply accounting rules.
+11. Update or invalidate balance snapshots.
+12. Write audit record.
+13. Commit transaction.
+
+If any required operation fails, roll back all associated writes.
+
+## 9.3 Financial operations
+
+Define accounting treatment for:
+
+- Opening balances.
+- Income.
+- Expenses.
+- Transfers.
+- Fees.
+- Debt drawdowns.
+- Debt payments.
+- Interest.
+- Savings contributions.
+- Reversals.
+- Adjustments.
+
+Do not implement accounting behaviour through guesses.
+
+Document every operation before coding it.
+
+## 9.4 Financial rules
+
+- Transfers are not income.
+- Transfers are not expenses.
+- Savings goals do not create money.
+- Savings contributions must not be counted as income.
+- Bill status alone does not change an account balance.
+- Debt balances must reconcile with their agreed accounting model.
+- Posted history must be preserved.
+- Corrections require proper reversal entries.
+- Idempotency must prevent duplicate posting.
+- Currency conversions must be explicitly recorded.
+
+## 9.5 Multi-currency
+
+For each currency operation, define:
+
+- Transaction currency.
+- Account currency.
+- Base or reporting currency where needed.
+- Exchange rate.
+- Rate date and source where applicable.
+- Original amount.
+- Converted amount.
+- Rounding rule.
+- Fees.
+- Resulting journal treatment.
+
+Do not add values from different currencies without an explicit conversion rule.
+
+---
+
+# PART 10 — API DESIGN
+
+Use:
+
+`/api/v1`
+
+Implement documented endpoints for all approved modules.
+
+Examples:
+
+```http
+GET    /api/v1/dashboard
+
+GET    /api/v1/accounts
+POST   /api/v1/accounts
+
+GET    /api/v1/transactions
+POST   /api/v1/transactions
+
+POST   /api/v1/transfers
+
+GET    /api/v1/income
+POST   /api/v1/income
+
+GET    /api/v1/expenses
+POST   /api/v1/expenses
+
+GET    /api/v1/budgets
+POST   /api/v1/budgets
+
+GET    /api/v1/savings
+POST   /api/v1/savings
+
+GET    /api/v1/debts
+POST   /api/v1/debts
+
+GET    /api/v1/bills
+POST   /api/v1/bills
+
+GET    /api/v1/reports/cash-flow
+
+GET    /api/v1/ai/insights
+
+GET    /api/v1/notifications
+GET    /api/v1/settings
+```
+
+For every endpoint document:
+
+- Method.
+- Path.
+- Authentication.
+- Permission.
+- Request schema.
+- Response schema.
+- Validation.
+- HTTP status codes.
+- Error behaviour.
+- Pagination.
+- Rate limits.
+- Idempotency where appropriate.
+- Audit requirements.
+
+Use consistent response structures.
+
+Example:
+
+```json
+{
+  "success": true,
+  "data": {},
+  "message": "Operation completed successfully"
+}
+```
+
+Never expose database errors, source code paths, stack traces or secrets.
+
+---
+
+# PART 11 — SECURITY AND PRIVACY
+
+Implement security from Phase 1.
+
+## 11.1 Authentication security
+
+- Argon2id password hashing where supported.
+- Secure session cookies.
+- Session identifier regeneration.
+- Secure password reset tokens.
+- CSRF protection.
+- Authentication rate limiting.
+- Account enumeration protection.
+- Optional two-factor authentication.
+- Active-session management.
+
+## 11.2 Application security
+
+Protect against:
+
+- SQL injection.
+- XSS.
+- CSRF.
+- IDOR.
+- Broken access control.
+- Privilege escalation.
+- Session fixation.
+- Brute force.
+- Path traversal.
+- Unsafe uploads.
+- Sensitive information leakage.
+- Duplicate financial requests.
+
+Use:
+
+- PDO prepared statements.
+- Contextual output escaping.
+- CSRF tokens.
+- Server-side validation.
+- Authorization middleware.
+- Ownership policies.
+- Rate limits.
+- Secure headers.
+- Controlled exception handling.
+
+## 11.3 Data isolation
+
+A user must not access another user's data by manipulating:
+
+- URL identifiers.
+- Form IDs.
+- API parameters.
+- Request bodies.
+- Account references.
+- Family identifiers.
+- Document identifiers.
+
+Family members must only access resources explicitly shared with them.
+
+## 11.4 Privacy
+
+- Private by default.
+- Collect only necessary data.
+- Provide data export.
+- Provide account closure.
+- Document retention periods.
+- Document consent.
+- Avoid unnecessary financial data exposure in logs.
+- Do not use financial information for unrelated model training without informed consent and governance.
+
+## 11.5 Document security
+
+- Private storage outside public web root.
+- Validate upload types.
+- Enforce size limits.
+- Generate safe storage names.
+- Use authenticated download routes.
+- Check document ownership.
+- Maintain access logs.
+
+## 11.6 Audit logging
+
+Audit:
+
+- Authentication security events.
+- Financial postings.
+- Reversals.
+- Account changes.
+- Permission changes.
+- Family access changes.
+- Subscription changes.
+- Administrative actions.
+
+Never log passwords or complete authentication/payment secrets.
+
+---
+
+# PART 12 — COMPLETE DEVELOPMENT ROADMAP
+
+Follow the phases in this order.
+
+No phase may be silently skipped.
+
+## PHASE 0 — DISCOVERY AND REQUIREMENTS ANALYSIS
+
+### Tasks
+
+1. Inspect the source project or establish that it is new.
+2. Inspect installed software.
+3. Inspect Git.
+4. Inspect database.
+5. Review all supplied specifications.
+6. Create the complete requirement register.
+7. Assign requirement IDs.
+8. Identify dependencies.
+9. Identify conflicts.
+10. Document assumptions.
+11. Identify risks.
+12. Prepare architecture.
+13. Prepare the database plan.
+14. Prepare accounting design.
+15. Prepare UI/UX implementation plan.
+16. Prepare security plan.
+17. Prepare all development phases.
+
+### Deliverables
+
+- Requirements analysis.
+- Feature Traceability Register.
+- Architecture document.
+- Risk Register.
+- Decision Register.
+- Module Dependency Map.
+- Initial directory structure.
+- Development plan.
+
+### Gate
+
+No major implementation begins until all core requirements have been mapped and technical blockers are identified.
+
+## PHASE 1 — PROJECT FOUNDATION
+
+### Tasks
+
+1. Create the project structure.
+2. Configure PHP.
+3. Configure Composer.
+4. Configure environment variables.
+5. Create application bootstrap.
+6. Create routing.
+7. Create PDO database connection.
+8. Implement centralized error handling.
+9. Implement logging.
+10. Configure application settings.
+11. Build CSS design tokens.
+12. Build global public layout.
+13. Build authenticated application shell.
+14. Build sidebar.
+15. Build topbar.
+16. Build buttons.
+17. Build form controls.
+18. Build cards.
+19. Build modals.
+20. Build notification components.
+21. Build loading skeletons.
+22. Build empty states.
+23. Build error states.
+24. Build responsive navigation.
+25. Implement dark theme.
+26. Implement light theme.
+27. Implement system theme.
+28. Implement language switching.
+29. Create English translations.
+30. Create Kinyarwanda translations.
+31. Build shared frontend utilities.
+
+### Deliverables
+
+- Working project foundation.
+- Complete directory structure.
+- Initial database connectivity.
+- Reusable UI component system.
+- Responsive application shell.
+- Theme engine.
+- Localization foundation.
+- Initial developer documentation.
+
+### Gate
+
+Verify application startup, configuration safety, database connection, navigation, responsive layout, theme switching and language switching.
+
+## PHASE 2 — PUBLIC WEBSITE AND AUTHENTICATION
+
+### Tasks
+
+1. Build landing page.
+2. Build feature sections.
+3. Build pricing section.
+4. Build security section.
+5. Build FAQ.
+6. Build footer.
+7. Build login.
+8. Build registration.
+9. Build logout.
+10. Implement password hashing.
+11. Implement secure sessions.
+12. Implement email verification.
+13. Implement password recovery.
+14. Implement password reset.
+15. Implement role and permission foundation.
+16. Implement CSRF protection.
+17. Implement rate limiting.
+18. Implement optional two-factor authentication.
+19. Implement session management.
+20. Implement security event logging.
+
+### Gate
+
+Verify valid registration, login, logout, email verification, password reset, role enforcement, session security and unauthorized access rejection.
+
+## PHASE 3 — DATABASE AND ACCOUNTING FOUNDATION
+
+### Tasks
+
+1. Complete ERD.
+2. Finalize data dictionary.
+3. Create database migrations.
+4. Create currencies.
+5. Create chart of accounts.
+6. Create accounting periods.
+7. Create journal entries.
+8. Create journal entry lines.
+9. Build posting service.
+10. Implement debit/credit validation.
+11. Implement atomic posting.
+12. Implement rollback.
+13. Implement reversal.
+14. Implement audit integration.
+15. Implement financial integrity tests.
+
+### Gate
+
+No unbalanced entry may post.
+
+Rollback must work.
+
+Reversals must preserve originals.
+
+Duplicate posting must be prevented.
+
+All financial writes must be authorized.
+
+## PHASE 4 — FINANCIAL ACCOUNTS AND TRANSACTIONS
+
+### Tasks
+
+1. Implement account types.
+2. Implement account creation.
+3. Implement opening balances.
+4. Implement account listing.
+5. Implement account details.
+6. Implement account editing.
+7. Implement account archiving.
+8. Implement balance calculations.
+9. Implement balance snapshots.
+10. Implement account history.
+11. Implement reconciliation foundation.
+12. Implement transaction creation.
+13. Implement categories.
+14. Implement tags.
+15. Implement search.
+16. Implement filters.
+17. Implement pagination.
+18. Implement transaction details.
+19. Implement reversal interface.
+20. Integrate with accounting engine.
+
+### Gate
+
+Account history, balances and accounting records must reconcile.
+
+Authorization and data isolation must pass.
+
+## PHASE 5 — INCOME, EXPENSES AND TRANSFERS
+
+### Tasks
+
+1. Build income screens.
+2. Build income services.
+3. Build income categories.
+4. Build expense screens.
+5. Build expense services.
+6. Build expense categories.
+7. Build transfer screens.
+8. Build same-currency transfers.
+9. Build multi-currency transfers.
+10. Implement exchange rates.
+11. Implement transaction confirmations.
+12. Implement attachments.
+13. Implement duplicate protection.
+14. Implement financial summaries.
+
+### Gate
+
+Income, expenses and transfers must post correctly.
+
+Transfers must not affect income or expense totals.
+
+Cross-currency transactions must follow documented conversion rules.
+
+## PHASE 6 — BUDGETS AND SAVINGS
+
+### Tasks
+
+1. Build budget management.
+2. Build budget periods.
+3. Build category allocations.
+4. Build used amount calculations.
+5. Build remaining amount calculations.
+6. Build progress.
+7. Build threshold alerts.
+8. Build budget history.
+9. Build savings goals.
+10. Build savings contributions.
+11. Build contribution history.
+12. Build savings progress.
+13. Integrate both modules with financial records.
+
+### Gate
+
+Budget calculations must match eligible posted expenses.
+
+Savings goals must not create fictitious money.
+
+Contributions must follow valid financial rules.
+
+## PHASE 7 — DEBTS, BILLS AND RECURRING OPERATIONS
+
+### Tasks
+
+1. Build debt records.
+2. Build interest calculation rules.
+3. Build repayment schedules.
+4. Build debt payment records.
+5. Build debt summaries.
+6. Build bills.
+7. Build reminders.
+8. Build bill payment workflow.
+9. Build recurring income.
+10. Build recurring expenses.
+11. Build recurring transfers.
+12. Build execution scheduling.
+13. Build execution logs.
+14. Build duplicate execution protection.
+15. Build pause and resume.
+16. Integrate with accounting.
+
+### Gate
+
+Debt balances must reconcile.
+
+Bill payments must link to financial transactions.
+
+Recurring operations must not execute twice accidentally.
+
+Failed jobs must be logged safely.
+
+## PHASE 8 — DASHBOARD, REPORTS AND EXPORTS
+
+### Tasks
+
+1. Build dashboard API.
+2. Build financial summary cards.
+3. Build account summaries.
+4. Build income summaries.
+5. Build expense summaries.
+6. Build cash-flow reports.
+7. Build category reports.
+8. Build budget reports.
+9. Build savings reports.
+10. Build debt reports.
+11. Build account activity reports.
+12. Build family reports.
+13. Build Chart.js charts.
+14. Build report filters.
+15. Build PDF export.
+16. Build CSV export.
+17. Build Excel export.
+18. Implement export authorization.
+19. Implement report reconciliation.
+20. Implement empty and error states.
+
+### Gate
+
+Dashboard values and reports must reconcile with authoritative accounting data.
+
+All exports must be authorized and currency-labelled.
+
+## PHASE 9 — C++ ANALYTICS ENGINE
+
+### Tasks
+
+1. Design JSON schemas.
+2. Design analytics input validation.
+3. Create C++17 project structure.
+4. Configure CMake.
+5. Implement JSON parsing.
+6. Implement financial summaries.
+7. Implement trend analysis.
+8. Implement expenditure analysis.
+9. Implement budget analysis.
+10. Implement cash-flow analysis.
+11. Implement savings forecasts.
+12. Implement debt scenarios.
+13. Implement anomaly detection.
+14. Implement uncertainty handling.
+15. Implement C++ tests.
+16. Create PHP analytics service.
+17. Implement controlled process execution.
+18. Implement timeouts.
+19. Validate returned JSON.
+20. Track analytics model versions.
+21. Build AI Insights screens.
+22. Implement analysis feedback.
+
+### Gate
+
+C++ must compile and pass tests.
+
+PHP-to-C++ integration must be verified.
+
+Invalid output must be rejected.
+
+Analytics must not modify financial records.
+
+## PHASE 10 — FAMILY FINANCE AND DOCUMENT MANAGEMENT
+
+### Tasks
+
+1. Create family groups.
+2. Implement family owners.
+3. Implement invitations.
+4. Implement members.
+5. Implement roles.
+6. Implement family permissions.
+7. Build shared budgets.
+8. Build shared savings.
+9. Build authorized shared activity.
+10. Implement member removal.
+11. Implement access revocation.
+12. Build document upload.
+13. Build document categories.
+14. Build private storage.
+15. Build secure downloads.
+16. Implement document access logs.
+
+### Gate
+
+Family isolation and secure document access must pass authorization tests.
+
+## PHASE 11 — NOTIFICATIONS AND USER SETTINGS
+
+### Tasks
+
+1. Build notification service.
+2. Build notification categories.
+3. Build read/unread state.
+4. Build notification history.
+5. Build preferences.
+6. Build budget alerts.
+7. Build bill reminders.
+8. Build savings milestones.
+9. Build security alerts.
+10. Build subscription notifications.
+11. Build profile settings.
+12. Build language settings.
+13. Build theme settings.
+14. Build financial preferences.
+15. Build security settings.
+16. Build privacy settings.
+17. Build data export workflow.
+18. Build account closure workflow.
+
+### Gate
+
+Preferences must persist.
+
+Notifications must be correctly linked to authorized records.
+
+Both supported languages and themes must work throughout the interface.
+
+## PHASE 12 — ADMINISTRATION AND COMMERCIAL SaaS
+
+### Tasks
+
+1. Build admin dashboard.
+2. Build user management.
+3. Build role management.
+4. Build permission management.
+5. Build subscription plans.
+6. Build subscription lifecycle.
+7. Build plan limits.
+8. Build payment records.
+9. Build provider event handling.
+10. Build renewal workflow.
+11. Build upgrade and downgrade workflow.
+12. Build cancellation.
+13. Build billing history.
+14. Build support tickets.
+15. Build support messages.
+16. Build audit logs.
+17. Build system settings.
+18. Build background job monitoring.
+19. Build system health.
+20. Build backup records.
+
+### Gate
+
+Admin authorization must be tested.
+
+Subscription limits must be enforced by PHP.
+
+Payment statuses must be based on trusted provider verification.
+
+## PHASE 13 — FULL TESTING AND SECURITY HARDENING
+
+### Functional testing
+
+Test all required modules and all important user journeys.
+
+### Financial testing
+
+Test:
+
+- Opening balances.
+- Income.
+- Expenses.
+- Transfers.
+- Multi-currency.
+- Debit/credit balancing.
+- Reversals.
+- Duplicate submissions.
+- Reconciliation.
+- Recurring posting.
+- Debt payments.
+- Bill payments.
+- Budget calculations.
+- Savings contributions.
+- Report reconciliation.
+
+### Security testing
+
+Test:
+
+- SQL injection.
+- XSS.
+- CSRF.
+- IDOR.
+- Broken access control.
+- Session fixation.
+- Unauthorized API access.
+- Unauthorized documents.
+- Privilege escalation.
+- Family data isolation.
+- Admin authorization.
+- Rate limits.
+- Secret exposure.
+
+### Interface testing
+
+Test:
+
+- All screen navigation.
+- Every major form.
+- All important buttons.
+- Loading states.
+- Empty states.
+- Success states.
+- Error states.
+- English.
+- Kinyarwanda.
+- Light theme.
+- Dark theme.
+- System theme.
+- Mobile.
+- Tablet.
+- Desktop.
+- Keyboard accessibility.
+
+### Performance testing
+
+Test:
+
+- Dashboard queries.
+- Transaction pagination.
+- Report exports.
+- Database indexes.
+- Analytics execution.
+- Concurrent access.
+- Background jobs.
+
+### Gate
+
+No known critical financial correctness or authorization defect may remain unresolved.
+
+All untested functionality must be disclosed.
+
+## PHASE 14 — PRODUCTION DEPLOYMENT
+
+### Tasks
+
+1. Inspect production infrastructure.
+2. Verify supported PHP version.
+3. Verify MySQL compatibility.
+4. Verify C++ execution capability.
+5. Configure production environment variables.
+6. Configure restricted database credentials.
+7. Configure HTTPS.
+8. Configure secure session cookies.
+9. Configure the public web root.
+10. Build the C++ executable.
+11. Configure private file storage.
+12. Configure scheduled jobs.
+13. Configure logs.
+14. Configure monitoring.
+15. Configure backups.
+16. Apply migrations.
+17. Perform deployment smoke tests.
+18. Prepare rollback.
+19. Create operational documentation.
+20. Prepare release notes.
+
+### Deployment gate
+
+The production system must satisfy the security, financial, migration, backup and monitoring requirements.
+
+Do not deploy an unverified build.
+
+## PHASE 15 — POST-RELEASE OPERATIONS AND MAINTENANCE
+
+### Tasks
+
+1. Establish routine application health checks.
+2. Monitor database capacity and availability.
+3. Monitor background job execution.
+4. Monitor C++ analytics failures.
+5. Review security logs.
+6. Verify backup completion.
+7. Perform scheduled restoration tests.
+8. Review performance.
+9. Track application defects.
+10. Maintain dependency updates.
+11. Prepare versioned releases.
+12. Document incidents.
+13. Maintain rollback procedures.
+14. Review user support issues.
+15. Maintain a prioritized improvement backlog.
+
+### Final deliverables
+
+- Operational runbook.
+- Monitoring guide.
+- Backup and restoration guide.
+- Incident response procedure.
+- Maintenance schedule.
+- Release management guide.
+- Known limitations register.
+
+---
+
+# PART 13 — PROJECT STRUCTURE
+
+Use this architecture as the starting point.
+
+```text
+ai-pfms/
+│
+├── app/
+│   ├── Controllers/
+│   ├── Middleware/
+│   ├── Services/
+│   ├── Repositories/
+│   ├── Policies/
+│   ├── Models/
+│   ├── Validators/
+│   ├── Exceptions/
+│   └── Support/
+│
+├── config/
+│   ├── app.php
+│   ├── database.php
+│   ├── security.php
+│   └── services.php
+│
+├── database/
+│   ├── migrations/
+│   ├── seeders/
+│   └── factories/
+│
+├── public/
+│   ├── index.php
+│   ├── assets/
+│   │   ├── css/
+│   │   ├── js/
+│   │   ├── images/
+│   │   └── icons/
+│   └── .htaccess
+│
+├── resources/
+│   ├── views/
+│   │   ├── layouts/
+│   │   ├── components/
+│   │   └── pages/
+│   └── lang/
+│       ├── en/
+│       └── rw/
+│
+├── routes/
+│   ├── web.php
+│   └── api.php
+│
+├── storage/
+│   ├── private/
+│   ├── logs/
+│   ├── cache/
+│   └── exports/
+│
+├── analytics/
+│   └── cpp/
+│       ├── include/
+│       ├── src/
+│       ├── tests/
+│       ├── CMakeLists.txt
+│       └── README.md
+│
+├── tests/
+│   ├── Unit/
+│   ├── Integration/
+│   ├── Security/
+│   ├── Financial/
+│   └── Acceptance/
+│
+├── docs/
+│   ├── SRS.md
+│   ├── UI_UX_SPECIFICATION.md
+│   ├── WIREFRAMES.md
+│   ├── ARCHITECTURE.md
+│   ├── DATABASE.md
+│   ├── ERD.md
+│   ├── DATA_DICTIONARY.md
+│   ├── ACCOUNTING_RULES.md
+│   ├── API.md
+│   ├── SECURITY.md
+│   ├── CPP_ANALYTICS.md
+│   ├── TESTING.md
+│   ├── DEPLOYMENT.md
+│   ├── OPERATIONS.md
+│   ├── FEATURE_TRACEABILITY.md
+│   ├── IMPLEMENTATION_STATUS.md
+│   ├── DECISIONS.md
+│   ├── RISK_REGISTER.md
+│   └── RELEASE_NOTES.md
+│
+├── .env.example
+├── .gitignore
+├── composer.json
+└── README.md
+```
+
+Adapt the structure only when necessary. Document every significant architectural change.
+
+Never store production secrets, private files or sensitive exports in the public directory.
+
+---
+
+# PART 14 — FEATURE TRACEABILITY AND ANTI-OMISSION CONTROL
+
+This section is mandatory.
+
+Create and continuously maintain:
+
+`docs/FEATURE_TRACEABILITY.md`
+
+For every FR-ID, maintain this table:
+
+| Requirement ID | Requirement | UI | Database | PHP | API | Security | Tests | Status |
+|---|---|---|---|---|---|---|---|---|
+| FR-ACC-001 | Create account | Linked | Linked | Linked | Linked | Checked | Passed/Not run | Status |
+
+The table must be complete for every feature listed in Part 5.
+
+## 14.1 No-silent-omission rule
+
+You must not:
+
+- Ignore a requirement.
+- Remove a requirement because implementation is difficult.
+- Combine unrelated features and claim that all are complete.
+- Replace backend implementation with static interface examples.
+- Replace testing with code review alone.
+- Replace security with hidden buttons.
+- Mark missing functionality as completed.
+- Leave undocumented missing API endpoints.
+- Leave unimplemented form actions.
+- Leave broken navigation.
+- Use empty placeholder services as completed modules.
+
+If a feature cannot be delivered, classify it as:
+
+- BLOCKED.
+- DEFERRED WITH APPROVAL.
+- NOT IMPLEMENTED.
+
+Record the reason and dependencies.
+
+Only the user can approve a material scope reduction.
+
+## 14.2 Completion definition
+
+A feature is VERIFIED only after:
+
+1. Requirement is understood.
+2. Design is approved or follows the approved specification.
+3. Database structure exists where needed.
+4. Backend business logic exists.
+5. Authorization is implemented.
+6. API integration works where needed.
+7. Frontend interaction works.
+8. Localization works.
+9. Light and dark themes work.
+10. Error and empty states work.
+11. Relevant automated tests pass.
+12. Documentation is updated.
+
+Do not use the number of generated files as the measure of completion.
+
+Use working, verified user workflows.
+
+---
+
+# PART 15 — TESTING AND ACCEPTANCE RULES
+
+## 15.1 Testing layers
+
+Implement:
+
+- Unit tests.
+- Integration tests.
+- Database tests.
+- API tests.
+- Financial integrity tests.
+- Security tests.
+- Frontend tests.
+- Localization tests.
+- Responsive tests.
+- Accessibility tests.
+- Performance tests.
+- Deployment tests.
+
+## 15.2 Mandatory financial scenarios
+
+**Test 1 — Income**
+
+A valid income record creates correct accounting entries and increases the appropriate account.
+
+**Test 2 — Expense**
+
+A valid expense decreases the appropriate account and creates correct accounting entries.
+
+**Test 3 — Transfer**
+
+A transfer changes the source and destination account balances but does not change income or expense totals.
+
+**Test 4 — Duplicate request**
+
+Repeating an identical protected financial submission cannot create an unintended duplicate posting.
+
+**Test 5 — Unbalanced journal**
+
+An unbalanced journal must be rejected and fully rolled back.
+
+**Test 6 — Reversal**
+
+A reversal preserves the original financial record and posts correcting entries.
+
+**Test 7 — Unauthorized access**
+
+A user cannot retrieve or modify another user's private data by changing a URL, ID or API request.
+
+**Test 8 — Family permissions**
+
+A family member can access only specifically authorized records.
+
+**Test 9 — Bill payment**
+
+A bill is only considered paid after its associated financial payment workflow succeeds.
+
+**Test 10 — Analytics isolation**
+
+An analytics request cannot modify a transaction, account or journal entry.
+
+**Test 11 — Cross-currency transfer**
+
+The exchange rate, original amounts, converted amounts and accounting treatment must be consistent and reproducible.
+
+**Test 12 — Recurring operation**
+
+A scheduled operation must have duplicate prevention and a traceable execution result.
+
+## 15.3 Honest test reporting
+
+Report separately:
+
+- Tests written.
+- Tests executed.
+- Tests passed.
+- Tests failed.
+- Tests not run.
+- Known limitations.
+
+Never claim that a test passed if it was not executed.
+
+---
+
+# PART 16 — DOCUMENTATION AND VERSION CONTROL
+
+Maintain documentation throughout development.
+
+Required documents:
+
+1. SRS.
+2. UI/UX specification.
+3. Screen-by-screen wireframes.
+4. Architecture.
+5. ERD.
+6. Data dictionary.
+7. Accounting rules.
+8. API documentation.
+9. Security documentation.
+10. C++ analytics documentation.
+11. Test strategy.
+12. Deployment guide.
+13. Operations guide.
+14. User manual.
+15. Developer guide.
+16. Feature traceability register.
+17. Implementation status.
+18. Decision register.
+19. Risk register.
+20. Release notes.
+
+## 16.1 Git requirements
+
+Use Git throughout the project.
+
+- Initialize Git if necessary.
+- Maintain stable main branch.
+- Maintain development branch.
+- Create feature branches when appropriate.
+- Commit completed milestones.
+- Use descriptive commit messages.
+- Never commit `.env`.
+- Never commit secrets.
+- Never force-push over protected work without approval.
+- Keep migrations in version control.
+- Tag stable releases.
+
+---
+
+# PART 17 — HOW YOU MUST IMPLEMENT AND REPORT EACH PHASE
+
+For every phase, follow this exact process.
+
+## Step A — Explain the phase
+
+State:
+
+- What is being built.
+- Why it is needed.
+- Which requirements it covers.
+- Which earlier phase it depends on.
+
+## Step B — Inspect existing code
+
+List:
+
+- Files to reuse.
+- Files to create.
+- Files to modify.
+- Existing dependencies.
+- Existing defects.
+- Risks.
+
+Do not invent files you have not inspected.
+
+## Step C — Prepare the implementation plan
+
+List the tasks in exact execution order.
+
+Identify required database changes and dependencies.
+
+## Step D — Implement complete files
+
+For each file:
+
+1. Give the exact path.
+2. Explain its purpose.
+3. Identify its dependencies.
+4. Provide its complete content.
+5. Explain its integration.
+6. Provide configuration requirements.
+7. Include error handling.
+8. Include validation.
+9. Include security checks.
+
+Where you have direct project workspace access, create and modify files directly. Then show the important changes and their paths.
+
+Do not merely describe files when you have tools to implement them.
+
+Do not replace complete implementations with unexplained pseudocode.
+
+## Step E — Database work
+
+Provide:
+
+- Migration names.
+- Complete migration contents.
+- Relationships.
+- Constraints.
+- Indexes.
+- Seed strategy.
+- Verification queries.
+- Rollback considerations.
+
+## Step F — Execution commands
+
+Provide exact commands for:
+
+- PowerShell.
+- PHP.
+- MySQL.
+- CMake.
+- Testing.
+- Browser verification.
+
+Explain where each command must run.
+
+## Step G — Testing
+
+Run tests using available tools.
+
+Provide:
+
+- Test command.
+- Expected result.
+- Actual result.
+- Failures.
+- Fixes.
+- Remaining risks.
+
+## Step H — Update project documentation
+
+Update:
+
+- FEATURE_TRACEABILITY.md
+- IMPLEMENTATION_STATUS.md
+- TESTING.md
+- DECISIONS.md
+- CHANGELOG or release notes where appropriate.
+
+## Step I — Phase completion report
+
+Use this structure:
+
+```text
+PHASE:
+PHASE NAME:
+STATUS:
+
+Requirements covered:
+- ...
+
+Features implemented:
+- ...
+
+Files created:
+- ...
+
+Files modified:
+- ...
+
+Database migrations:
+- ...
+
+API endpoints:
+- ...
+
+Security controls:
+- ...
+
+Tests written:
+- ...
+
+Tests executed:
+- ...
+
+Tests passed:
+- ...
+
+Tests failed:
+- ...
+
+Tests not run:
+- ...
+
+Known limitations:
+- ...
+
+Remaining tasks:
+- ...
+
+Feature traceability updated:
+YES / NO
+```
+
+## Step J — Phase gate
+
+Before moving forward:
+
+1. Review all acceptance criteria.
+2. Fix failed tests within the current scope.
+3. Check that documentation is updated.
+4. Check that no prior working feature was broken.
+5. Check that all relevant feature IDs are accounted for.
+6. Save or commit the verified work.
+7. Report unresolved problems.
+8. Request approval to proceed to the next phase.
+
+Do not silently advance past a critical failed financial or security test.
+
+For noncritical limitations, document them and explain whether they affect the next phase.
+
+---
+
+# PART 18 — PERFORMANCE, RELIABILITY AND OPERATIONS
+
+## 18.1 Performance
+
+- Paginate large tables.
+- Optimize database queries.
+- Add appropriate indexes.
+- Avoid unnecessary queries.
+- Load dashboard data efficiently.
+- Optimize exports.
+- Limit analytics process execution.
+- Avoid loading all historical transactions at once.
+- Cache only where safe.
+- Invalidate summaries after relevant financial changes.
+
+Define performance targets using a documented workload and verify them using tests. Do not invent performance results.
+
+## 18.2 Reliability
+
+- Handle database connection failures.
+- Handle failed background jobs.
+- Handle C++ analytics timeouts.
+- Handle duplicate requests.
+- Handle network interruptions.
+- Preserve committed financial records.
+- Use database transactions.
+- Maintain logs without exposing secrets.
+
+## 18.3 Backup and restoration
+
+Implement and document:
+
+- Database backup.
+- Private file backup.
+- Backup encryption.
+- Backup retention.
+- Backup verification.
+- Restore procedures.
+- Restoration tests.
+- Recovery objectives.
+
+A backup process is not complete merely because a backup file exists. Restoration must be tested.
+
+## 18.4 Monitoring
+
+Monitor:
+
+- Application availability.
+- Database health.
+- Background jobs.
+- Analytics executable.
+- Storage capacity.
+- Failed authentication events.
+- Critical exceptions.
+- Backup status.
+
+Restrict administrative monitoring information to authorized users.
+
+---
+
+# PART 19 — FINAL RELEASE CHECKLIST
+
+The project is not complete until every applicable item below has been verified.
+
+## Product completeness
+
+- All 21 approved modules accounted for.
+- All feature IDs tracked.
+- All required screens implemented.
+- All important navigation flows work.
+- All forms function.
+- All APIs are integrated.
+- All required exports work.
+- All approved subscription workflows work.
+- All required admin screens work.
+
+## Financial correctness
+
+- Double-entry accounting active.
+- Journal entries balance.
+- Account balances reconcile.
+- Opening balances are correctly accounted for.
+- Income totals are correct.
+- Expense totals are correct.
+- Transfers excluded from income and expenses.
+- Savings contributions not incorrectly counted as income.
+- Debt accounting documented.
+- Bill payments linked to transactions.
+- Multi-currency rules documented and tested.
+- Reversals preserve original records.
+- Duplicate submissions prevented.
+- Reports reconcile.
+
+## Security
+
+- Authentication secure.
+- Authorization server-side.
+- User data isolated.
+- Family permissions enforced.
+- Admin permissions enforced.
+- Document downloads protected.
+- CSRF protected.
+- XSS protection implemented.
+- SQL injection protection implemented.
+- Sessions protected.
+- Secrets protected.
+- Audit trail implemented.
+- Production configuration secured.
+
+## User experience
+
+- Homepage complete.
+- Dashboard complete.
+- All module screens accounted for.
+- Desktop responsive.
+- Tablet responsive.
+- Mobile responsive.
+- Light theme complete.
+- Dark theme complete.
+- System theme complete.
+- English complete.
+- Kinyarwanda complete.
+- Empty states implemented.
+- Loading states implemented.
+- Success states implemented.
+- Error states implemented.
+- Accessibility reviewed.
+
+## Analytics
+
+- C++ builds.
+- C++ tests pass.
+- JSON schemas documented.
+- PHP integration works.
+- Output validation works.
+- Timeouts work.
+- Insights explain their data basis.
+- Forecast assumptions shown.
+- Anomalies are treated as review signals.
+- Analytics cannot alter financial records.
+
+## Deployment
+
+- Production PHP supported.
+- MySQL configured.
+- C++ executable supported.
+- HTTPS enabled.
+- Environment secrets secured.
+- Private files outside public root.
+- Migrations verified.
+- Backups configured.
+- Restoration tested.
+- Monitoring configured.
+- Rollback documented.
+- Production smoke tests passed.
+
+## Documentation and handover
+
+- Developer guide.
+- User guide.
+- API documentation.
+- Database documentation.
+- Security documentation.
+- Deployment guide.
+- Operations guide.
+- Release notes.
+- Known limitations.
+- Feature traceability.
+- Final test report.
+
+Do not declare the system production-ready while critical acceptance criteria remain unresolved.
+
+---
+
+# PART 20 — INITIAL EXECUTION COMMAND
+
+You must now begin with:
+
+## PHASE 0 — PROJECT DISCOVERY AND REQUIREMENTS ANALYSIS
+
+Do not immediately generate the complete application.
+
+First inspect the workspace and determine whether this is an existing or new project.
+
+Your first development response must include:
+
+1. Understanding of the product.
+2. Existing project inspection report.
+3. Development environment assessment.
+4. Technology compatibility assessment.
+5. Complete proposed architecture.
+6. Complete proposed directory structure.
+7. Module dependency map.
+8. Feature Traceability Register structure.
+9. Database design plan.
+10. ERD plan.
+11. Double-entry accounting plan.
+12. PHP-to-C++ integration plan.
+13. UI/UX implementation plan.
+14. Security plan.
+15. Testing plan.
+16. Deployment considerations.
+17. Phase 0 completion checklist.
+18. Genuine blockers, if any.
+
+Do not ask questions already answered in this specification.
+
+Make documented, reasonable assumptions for noncritical unspecified details.
+
+Ask only for information that is essential and cannot safely be inferred.
+
+When the environment or project files are accessible, inspect them instead of asking the user to describe them.
+
+After Phase 0 is reviewed and approved, implement Phase 1.
+
+Continue sequentially through all approved phases, maintaining traceability, documentation and testing evidence.
+
+**FINAL MISSION: Build AI-PFMS from the first project file to a complete, secure, financially correct, professionally designed, fully tested and production-deployable commercial SaaS application using PHP 8.3+, MySQL, HTML5, CSS3, Vanilla JavaScript and C++17+, with English/Kinyarwanda and light/dark themes. Do not use Python. Do not miss or silently omit any approved feature.**

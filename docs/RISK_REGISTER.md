@@ -1,0 +1,15 @@
+# AI-PFMS — Risk Register & Genuine Blockers
+
+**Last Updated:** Phase 0 Discovery  
+**Owner:** Engineering & Security Team
+
+| Risk ID | Category | Severity | Description | Mitigation / Resolution Plan | Status |
+|---|---|---|---|---|---|
+| RSK-001 | Environment / Blocker | **CRITICAL** | **Runtime mismatch in AI Studio sandbox:** Inspection confirmed `php` (8.3+), `composer`, `mysql`/`mariadb`, and `cmake` are **not installed** in this container (`node v22.23.2`, `g++ 12.2.0`, and `git 2.34.1` are present), and the preview server runs on port 3000 via Vite/Node. | Escalated to user in Phase 0 report. Await explicit approval for either: (A) Strict PHP 8.3 + MySQL + C++17 codebase targeted for WAMP64/VPS (with C++ verified via `g++`), (B1) Installing PHP/MariaDB/Composer/CMake in the Linux sandbox if permitted, or (B2) Approved live-preview bridge while keeping spec fidelity. | OPEN (BLOCKER) |
+| RSK-002 | Financial Integrity | **CRITICAL** | Floating-point rounding errors or unbalanced journal entries corrupting balances. | Use `DECIMAL(19,4)` in MySQL, integer minor-unit/BCMath arithmetic in PHP, and atomic `PostingService` enforcing `sum(debits) === sum(credits)`. | MITIGATED IN DESIGN |
+| RSK-003 | Financial Integrity | **HIGH** | Duplicate financial postings from double-clicks, retries, or recurring job overlaps. | Enforce `Idempotency-Key` middleware backed by `idempotency_records` unique constraints and unique execution slots for recurring jobs. | MITIGATED IN DESIGN |
+| RSK-004 | Security / Privacy | **CRITICAL** | Service worker accidentally caching authenticated pages, tokens, balances, or financial API responses. | Enforce explicit network-only bypass for `/api/*`, authenticated HTML routes, and `Cache-Control: no-store` headers; automated SW cache audit tests in Phase 13. | MITIGATED IN DESIGN |
+| RSK-005 | Security / IDOR | **HIGH** | Horizontal privilege escalation across users or family members via URL/API ID tampering. | Mandatory server-side `Policy` classes checking `user_id` / explicit `family_permissions` on every controller/repository call. | MITIGATED IN DESIGN |
+| RSK-006 | C++ Analytics | **HIGH** | Shell injection, malformed JSON, or runaway process in PHP-to-C++ execution. | Use `proc_open` with direct argument array (no shell), stdin/stdout pipes, bounded payload sizes, strict timeout, and JSON schema validation before/after execution. | MITIGATED IN DESIGN |
+| RSK-007 | Document Security | **HIGH** | Public exposure of uploaded receipts/invoices or path traversal on download. | Store files in `storage/private/` outside `public/`, use generated UUID storage keys, validate magic bytes via `finfo`, serve via authorized PHP stream. | MITIGATED IN DESIGN |
+| RSK-008 | Multi-Currency | **MEDIUM** | Mixing currencies in dashboard sums or reports without conversion rules. | Prohibit naive summing across currencies; require explicit `exchange_rates` conversion to user `default_currency` with rate timestamp recorded. | MITIGATED IN DESIGN |
