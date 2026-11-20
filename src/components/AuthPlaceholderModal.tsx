@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Lock, X } from 'lucide-react';
+import { signInWithPopup } from 'firebase/auth';
+import { Loader2, Lock, ShieldCheck, X } from 'lucide-react';
 import type { Locale } from '../i18n/translations';
 import { translations } from '../i18n/translations';
+import { auth, googleAuthProvider } from '../lib/firebase';
 
 export type AuthMode = 'login' | 'register';
 
@@ -9,7 +11,7 @@ interface AuthPlaceholderModalProps {
   mode: AuthMode | null;
   onSwitchMode: (mode: AuthMode) => void;
   onClose: () => void;
-  onLoginSuccess: (user: { name: string; email: string; isNewUser?: boolean }) => void;
+  onLoginSuccess: () => void;
   locale: Locale;
 }
 
@@ -21,42 +23,46 @@ export function AuthPlaceholderModal({
   locale,
 }: AuthPlaceholderModalProps) {
   const t = translations[locale].authModal;
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    setPassword('');
+    setErrorMessage(null);
+    setSubmitting(false);
   }, [mode]);
 
   useEffect(() => {
     if (!mode) return;
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape' && !submitting) onClose();
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [mode, onClose]);
+  }, [mode, submitting, onClose]);
 
   if (!mode) return null;
 
   const isRegister = mode === 'register';
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const cleanEmail = email.trim() || 'member@aipfms.local';
-    const derivedName =
-      fullName.trim() ||
-      cleanEmail
-        .split('@')[0]
-        .replace(/[._-]+/g, ' ')
-        .replace(/\b\w/g, (c) => c.toUpperCase());
-
-    onLoginSuccess({
-      name: derivedName,
-      email: cleanEmail,
-      isNewUser: isRegister,
-    });
+  const handleGoogleSignIn = async () => {
+    setSubmitting(true);
+    setErrorMessage(null);
+    try {
+      await signInWithPopup(auth, googleAuthProvider);
+      onLoginSuccess();
+    } catch (err) {
+      const code =
+        typeof err === 'object' && err !== null && 'code' in err
+          ? String((err as { code?: string }).code)
+          : '';
+      if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
+        setErrorMessage(t.authErrorGeneric);
+      } else {
+        setErrorMessage(t.authErrorGeneric);
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -65,7 +71,9 @@ export function AuthPlaceholderModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="auth-modal-title"
-      onClick={onClose}
+      onClick={() => {
+        if (!submitting) onClose();
+      }}
     >
       <div
         className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-[#263449] dark:bg-[#0B1220]"
@@ -88,9 +96,10 @@ export function AuthPlaceholderModal({
           </div>
           <button
             type="button"
+            disabled={submitting}
             onClick={onClose}
             aria-label={t.close}
-            className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-[#162235] dark:hover:text-white"
+            className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 disabled:opacity-50 dark:text-slate-400 dark:hover:bg-[#162235] dark:hover:text-white"
           >
             <X className="h-5 w-5" />
           </button>
@@ -100,81 +109,59 @@ export function AuthPlaceholderModal({
           {isRegister ? t.registerDesc : t.loginDesc}
         </p>
 
-        <form className="mt-5 space-y-4" onSubmit={handleSubmit}>
-          {isRegister && (
-            <div>
-              <label
-                htmlFor="auth-fullname"
-                className="block text-xs font-medium text-slate-700 dark:text-slate-200"
-              >
-                {t.fullNameLabel}
-              </label>
-              <input
-                id="auth-fullname"
-                type="text"
-                required
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="John Doe"
-                className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#7C3AED] focus:outline-none dark:border-[#263449] dark:bg-[#162235] dark:text-slate-50"
-              />
+        <div className="mt-6 space-y-4">
+          {errorMessage && (
+            <div
+              role="alert"
+              className="rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-xs font-medium text-rose-700 dark:border-rose-500/30 dark:bg-rose-950/40 dark:text-rose-300"
+            >
+              {errorMessage}
             </div>
           )}
 
-          <div>
-            <label
-              htmlFor="auth-email"
-              className="block text-xs font-medium text-slate-700 dark:text-slate-200"
-            >
-              {t.emailLabel}
-            </label>
-            <input
-              id="auth-email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="name@example.com"
-              className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#7C3AED] focus:outline-none dark:border-[#263449] dark:bg-[#162235] dark:text-slate-50"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="auth-password"
-              className="block text-xs font-medium text-slate-700 dark:text-slate-200"
-            >
-              {t.passwordLabel}
-            </label>
-            <input
-              id="auth-password"
-              type="password"
-              required
-              minLength={8}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••••••"
-              className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#7C3AED] focus:outline-none dark:border-[#263449] dark:bg-[#162235] dark:text-slate-50"
-            />
-          </div>
-
-          <p className="text-[11px] text-slate-500 dark:text-slate-400">
-            {t.placeholderNotice}
-          </p>
-
-          <button
-            type="submit"
-            className="w-full rounded-xl bg-[#7C3AED] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#6D28D9] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7C3AED]"
-          >
-            {isRegister ? t.submitRegister : t.submitLogin}
-          </button>
-        </form>
-
-        <div className="mt-4 text-center">
           <button
             type="button"
+            disabled={submitting}
+            onClick={() => void handleGoogleSignIn()}
+            className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-xs transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7C3AED] disabled:cursor-not-allowed disabled:opacity-60 dark:border-[#263449] dark:bg-[#162235] dark:text-white dark:hover:bg-[#1E2D45]"
+          >
+            {submitting ? (
+              <Loader2 className="h-4 w-4 animate-spin text-[#7C3AED]" />
+            ) : (
+              <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  fill="#4285F4"
+                  d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24Z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14Z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96Z"
+                />
+              </svg>
+            )}
+            <span>{submitting ? t.signingIn : t.googleButton}</span>
+          </button>
+
+          <div className="flex items-center gap-2 rounded-xl border border-slate-100 bg-slate-50/80 px-3 py-2 text-[11px] text-slate-500 dark:border-[#263449] dark:bg-[#162235]/60 dark:text-slate-400">
+            <ShieldCheck className="h-4 w-4 shrink-0 text-[#16A34A]" />
+            <span>{t.securityNotice}</span>
+          </div>
+        </div>
+
+        <div className="mt-5 text-center">
+          <button
+            type="button"
+            disabled={submitting}
             onClick={() => onSwitchMode(isRegister ? 'login' : 'register')}
-            className="text-xs font-medium text-[#7C3AED] hover:underline"
+            className="text-xs font-medium text-[#7C3AED] hover:underline disabled:opacity-50"
           >
             {isRegister ? t.switchToLogin : t.switchToRegister}
           </button>

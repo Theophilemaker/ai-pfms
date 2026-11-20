@@ -207,6 +207,27 @@ self.addEventListener('message', (event) => {
         .then(() => reply({ ok: true }))
         .catch(() => reply({ ok: false }))
     );
+  } else if (data.type === 'SHOW_BUDGET_PUSH_NOTIFICATION' && data.payload) {
+    const title = String(data.payload.title || 'AI-PFMS Budget Alert');
+    const body = String(data.payload.body || 'Monthly category spending exceeded threshold.');
+    const tag = String(data.payload.tag || 'ai-pfms-budget-alert');
+    event.waitUntil(
+      self.registration
+        .showNotification(title, {
+          body,
+          icon: '/assets/icons/icon-192.png',
+          badge: '/assets/icons/icon-192.png',
+          tag,
+          renotify: false,
+          data: {
+            url: '/?section=budgets',
+            category: data.payload.category || '',
+            monthKey: data.payload.monthKey || '',
+          },
+        })
+        .then(() => reply({ ok: true }))
+        .catch(() => reply({ ok: false }))
+    );
   }
 });
 
@@ -309,6 +330,59 @@ self.addEventListener('fetch', (event) => {
         }
         return response;
       });
+    })
+  );
+});
+
+self.addEventListener('push', (event) => {
+  let payload = {};
+  try {
+    payload = event.data ? event.data.json() : {};
+  } catch {
+    payload = { body: event.data ? event.data.text() : 'Category budget threshold exceeded.' };
+  }
+  const title = String(payload.title || 'AI-PFMS Budget Alert');
+  const body = String(payload.body || 'Monthly spending exceeded 90% of your allocated budget.');
+  const tag = String(payload.tag || 'ai-pfms-budget-push');
+
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body,
+      icon: '/assets/icons/icon-192.png',
+      badge: '/assets/icons/icon-192.png',
+      tag,
+      renotify: false,
+      data: {
+        url: payload.url || '/?section=budgets',
+      },
+    })
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const targetUrl =
+    (event.notification.data && event.notification.data.url) || '/?section=budgets';
+
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if ('focus' in client) {
+          client.focus();
+          if ('postMessage' in client) {
+            client.postMessage({
+              type: 'NAVIGATE_SECTION',
+              section: 'budgets',
+              category: event.notification.data ? event.notification.data.category : undefined,
+            });
+          }
+          return;
+        }
+      }
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(targetUrl);
+      }
+      return undefined;
     })
   );
 });

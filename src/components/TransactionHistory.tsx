@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Download, Filter, Layers, Plus, RotateCcw, Search } from 'lucide-react';
+import { Download, Filter, Layers, Plus, Repeat, RotateCcw, Search, Target } from 'lucide-react';
 import { translations, type Locale } from '../i18n/translations';
 import type { RecordedTransaction, TransactionType } from './TransactionInput';
 
@@ -58,6 +58,8 @@ export function TransactionHistory({
           tx.referenceNo.toLowerCase().includes(q) ||
           tx.date.includes(q) ||
           String(tx.amount).includes(q) ||
+          Boolean(tx.originalCurrency?.toLowerCase().includes(q)) ||
+          Boolean(tx.goalName?.toLowerCase().includes(q)) ||
           Boolean(tx.tags?.some((tag) => tag.toLowerCase().includes(q)));
         if (!matchesText) return false;
       }
@@ -334,9 +336,28 @@ export function TransactionHistory({
                     </td>
                     <td className="max-w-[240px] px-3 py-3 font-medium text-slate-900 dark:text-white">
                       <p className="truncate">{tx.description}</p>
-                      {tx.tags && tx.tags.length > 0 && (
+                      {(tx.isRecurring || tx.goalName || (tx.tags && tx.tags.length > 0)) && (
                         <div className="mt-1 flex flex-wrap gap-1">
-                          {tx.tags.map((tag) => (
+                          {tx.goalName && (
+                            <span className="inline-flex items-center gap-1 rounded border border-sky-200 bg-sky-50 px-1.5 py-0.5 text-[10px] font-semibold text-sky-700 dark:border-sky-500/30 dark:bg-sky-950/40 dark:text-sky-300">
+                              <Target className="h-2.5 w-2.5" />
+                              <span>{tx.goalName}</span>
+                            </span>
+                          )}
+                          {tx.isRecurring && tx.recurringFrequency && (
+                            <span
+                              title={
+                                tx.nextOccurrenceDate
+                                  ? `${tm.nextRunLabel} ${tx.nextOccurrenceDate}`
+                                  : undefined
+                              }
+                              className="inline-flex items-center gap-1 rounded border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:text-emerald-300"
+                            >
+                              <Repeat className="h-2.5 w-2.5" />
+                              <span>{tm.frequencies[tx.recurringFrequency]}</span>
+                            </span>
+                          )}
+                          {tx.tags?.map((tag) => (
                             <span
                               key={tag}
                               className="rounded border border-violet-200 bg-violet-50 px-1.5 py-0.5 text-[10px] font-semibold text-[#6D28D9] dark:border-violet-500/30 dark:bg-violet-950/40 dark:text-violet-300"
@@ -360,8 +381,18 @@ export function TransactionHistory({
                           : 'text-rose-600 dark:text-rose-400'
                       }`}
                     >
-                      {tx.type === 'income' ? '+' : '-'}
-                      {formatAmount(tx.amount, tx.currency)}
+                      <div>
+                        {tx.type === 'income' ? '+' : '-'}
+                        {formatAmount(tx.amount, tx.currency)}
+                      </div>
+                      {tx.originalCurrency &&
+                        tx.originalAmount !== undefined &&
+                        tx.originalCurrency !== tx.currency && (
+                          <div className="mt-0.5 text-[10px] font-normal text-slate-500 dark:text-slate-400">
+                            {tm.originalEntryLabel}: {formatAmount(tx.originalAmount, tx.originalCurrency)}
+                            {tx.exchangeRate ? ` @ ${tx.exchangeRate}` : ''}
+                          </div>
+                        )}
                     </td>
                   </tr>
                 ))}
@@ -380,9 +411,21 @@ export function TransactionHistory({
                   <p className="truncate text-[11px] text-slate-500 dark:text-slate-400">
                     {tx.category} · {tx.accountName} · {tx.date}
                   </p>
-                  {tx.tags && tx.tags.length > 0 && (
+                  {(tx.isRecurring || tx.goalName || (tx.tags && tx.tags.length > 0)) && (
                     <div className="mt-1 flex flex-wrap gap-1">
-                      {tx.tags.map((tag) => (
+                      {tx.goalName && (
+                        <span className="inline-flex items-center gap-1 rounded border border-sky-200 bg-sky-50 px-1.5 py-0.5 text-[10px] font-semibold text-sky-700 dark:border-sky-500/30 dark:bg-sky-950/40 dark:text-sky-300">
+                          <Target className="h-2.5 w-2.5" />
+                          <span>{tx.goalName}</span>
+                        </span>
+                      )}
+                      {tx.isRecurring && tx.recurringFrequency && (
+                        <span className="inline-flex items-center gap-1 rounded border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:text-emerald-300">
+                          <Repeat className="h-2.5 w-2.5" />
+                          <span>{tm.frequencies[tx.recurringFrequency]}</span>
+                        </span>
+                      )}
+                      {tx.tags?.map((tag) => (
                         <span
                           key={tag}
                           className="rounded border border-violet-200 bg-violet-50 px-1.5 py-0.5 text-[10px] font-semibold text-[#6D28D9] dark:border-violet-500/30 dark:bg-violet-950/40 dark:text-violet-300"
@@ -393,16 +436,25 @@ export function TransactionHistory({
                     </div>
                   )}
                 </div>
-                <span
-                  className={`font-mono-num shrink-0 font-bold ${
-                    tx.type === 'income'
-                      ? 'text-[#16A34A]'
-                      : 'text-rose-600 dark:text-rose-400'
-                  }`}
-                >
-                  {tx.type === 'income' ? '+' : '-'}
-                  {formatAmount(tx.amount, tx.currency)}
-                </span>
+                <div className="shrink-0 text-right">
+                  <span
+                    className={`font-mono-num block font-bold ${
+                      tx.type === 'income'
+                        ? 'text-[#16A34A]'
+                        : 'text-rose-600 dark:text-rose-400'
+                    }`}
+                  >
+                    {tx.type === 'income' ? '+' : '-'}
+                    {formatAmount(tx.amount, tx.currency)}
+                  </span>
+                  {tx.originalCurrency &&
+                    tx.originalAmount !== undefined &&
+                    tx.originalCurrency !== tx.currency && (
+                      <span className="font-mono-num mt-0.5 block text-[10px] text-slate-500 dark:text-slate-400">
+                        {formatAmount(tx.originalAmount, tx.originalCurrency)}
+                      </span>
+                    )}
+                </div>
               </li>
             ))}
           </ul>

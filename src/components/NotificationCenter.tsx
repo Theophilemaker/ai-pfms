@@ -53,6 +53,7 @@ export function evaluateFinancialAlerts(params: {
   primaryCurrency: 'RWF' | 'USD';
   monthlyIncomeTarget: number;
   budgetThresholdPct?: number;
+  categoryThresholds?: Record<string, number>;
   locale: Locale;
   formatAmount: (amount: number, currency: string) => string;
 }): FinancialAlert[] {
@@ -63,6 +64,7 @@ export function evaluateFinancialAlerts(params: {
     primaryCurrency,
     monthlyIncomeTarget,
     budgetThresholdPct = 80,
+    categoryThresholds = {},
     locale,
     formatAmount,
   } = params;
@@ -114,8 +116,9 @@ export function evaluateFinancialAlerts(params: {
     });
 
   // 2. Budget Threshold Warnings (>= configured thresholdPct warning, >= 100% critical)
+  const currentMonthKey = todayIso.slice(0, 7);
   const expensesByCategory = transactions
-    .filter((tx) => tx.type === 'expense')
+    .filter((tx) => tx.type === 'expense' && tx.date.startsWith(currentMonthKey))
     .reduce<Record<string, number>>((acc, tx) => {
       acc[tx.category] = (acc[tx.category] ?? 0) + tx.amount;
       return acc;
@@ -127,6 +130,9 @@ export function evaluateFinancialAlerts(params: {
     if (b.monthlyLimit <= 0) return;
     const spent = expensesByCategory[b.category] ?? 0;
     const pct = Math.round((spent / b.monthlyLimit) * 100);
+    const rawCatThreshold = categoryThresholds[b.category] ?? safeThreshold;
+    const effectiveThreshold = Math.min(100, Math.max(10, Math.round(rawCatThreshold)));
+
     if (pct >= 100) {
       alerts.push({
         id: `budget-over-${b.category}-${pct}`,
@@ -138,9 +144,9 @@ export function evaluateFinancialAlerts(params: {
         targetSection: 'budgets',
         amountText: `${pct}%`,
       });
-    } else if (pct >= safeThreshold) {
+    } else if (pct >= effectiveThreshold) {
       alerts.push({
-        id: `budget-warn-${b.category}-${pct}-${safeThreshold}`,
+        id: `budget-warn-${b.category}-${pct}-${effectiveThreshold}`,
         kind: 'budget_threshold',
         severity: 'warning',
         title: `${nc.budgetWarningTitle}: ${b.category}`,

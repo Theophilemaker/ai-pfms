@@ -96,13 +96,19 @@ export function RecentActivity({
       const iso = tx.createdAt ?? `${tx.date}T12:00:00.000Z`;
       const sortKey = Date.parse(iso) || 0;
       const isIncome = tx.type === 'income';
+      const fxNote =
+        tx.originalCurrency &&
+        tx.originalAmount !== undefined &&
+        tx.originalCurrency !== tx.currency
+          ? ` · ${formatAmount(tx.originalAmount, tx.originalCurrency)}`
+          : '';
       return {
         id: `txn-${tx.id}`,
         category: 'transaction',
         timestamp: iso,
         sortKey,
         title: tx.description,
-        subtitle: `${tx.category} · ${tx.accountName} · ${tx.referenceNo}`,
+        subtitle: `${tx.category} · ${tx.accountName} · ${tx.referenceNo}${fxNote}`,
         tagLabel: isIncome ? ra.transactionTagIncome : ra.transactionTagExpense,
         tagTone: isIncome ? 'income' : 'expense',
         amountText: `${isIncome ? '+' : '-'}${formatAmount(tx.amount, tx.currency)}`,

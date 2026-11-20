@@ -1,0 +1,865 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global catch-all deny rule
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedOwner(userId) {
+      return isSignedIn()
+        && request.auth.uid == userId
+        && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string
+        && id.size() >= 1
+        && id.size() <= 128
+        && !id.matches('.*[/\\\\.].*');
+    }
+
+    function isValidEmail(email) {
+      return email is string
+        && email.size() >= 3
+        && email.size() <= 254
+        && email.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$');
+    }
+
+    function isValidCurrency(currency) {
+      return currency in ['RWF', 'USD'];
+    }
+
+    function isValidIsoDate(dateStr) {
+      return dateStr is string
+        && dateStr.size() == 10
+        && dateStr.matches('^\\d{4}-\\d{2}-\\d{2}$');
+    }
+
+    function hasImmutableOwnerAndCreatedAt(userId) {
+      return request.resource.data.uid == userId
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+    function isValidUserProfile(data, userId) {
+      return data.keys().hasAll([
+          'uid',
+          'email',
+          'displayName',
+          'primaryCurrency',
+          'monthlyIncomeTarget',
+          'onboardingCompleted',
+          'budgetThresholdPct',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'uid',
+          'email',
+          'displayName',
+          'primaryCurrency',
+          'monthlyIncomeTarget',
+          'onboardingCompleted',
+          'budgetThresholdPct',
+          'categoryThresholds',
+          'customCategoriesIncome',
+          'customCategoriesExpense',
+          'savedTags',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.uid == userId
+        && isValidEmail(data.email)
+        && data.displayName is string
+        && data.displayName.size() >= 1
+        && data.displayName.size() <= 100
+        && isValidCurrency(data.primaryCurrency)
+        && data.monthlyIncomeTarget is number
+        && data.monthlyIncomeTarget >= 0
+        && data.monthlyIncomeTarget <= 1000000000000
+        && data.onboardingCompleted is bool
+        && data.budgetThresholdPct is number
+        && data.budgetThresholdPct >= 10
+        && data.budgetThresholdPct <= 100
+        && (!('categoryThresholds' in data) || (data.categoryThresholds is map && data.categoryThresholds.size() <= 40))
+        && (!('customCategoriesIncome' in data) || (
+          data.customCategoriesIncome is list
+          && data.customCategoriesIncome.size() <= 40
+          && (data.customCategoriesIncome.size() == 0 || data.customCategoriesIncome[0] is string)
+        ))
+        && (!('customCategoriesExpense' in data) || (
+          data.customCategoriesExpense is list
+          && data.customCategoriesExpense.size() <= 40
+          && (data.customCategoriesExpense.size() == 0 || data.customCategoriesExpense[0] is string)
+        ))
+        && (!('savedTags' in data) || (
+          data.savedTags is list
+          && data.savedTags.size() <= 40
+          && (data.savedTags.size() == 0 || data.savedTags[0] is string)
+        ))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidLinkedAccount(data, userId, accountId) {
+      return data.keys().hasAll([
+          'id',
+          'uid',
+          'name',
+          'type',
+          'currency',
+          'status',
+          'providerLabel',
+          'openingBalance',
+          'enabled',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'id',
+          'uid',
+          'name',
+          'type',
+          'currency',
+          'status',
+          'providerLabel',
+          'openingBalance',
+          'enabled',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.id == accountId
+        && data.uid == userId
+        && data.name is string
+        && data.name.size() >= 1
+        && data.name.size() <= 80
+        && data.type is string
+        && data.type.size() >= 1
+        && data.type.size() <= 60
+        && isValidCurrency(data.currency)
+        && data.status is string
+        && data.status.size() >= 1
+        && data.status.size() <= 40
+        && data.providerLabel is string
+        && data.providerLabel.size() <= 80
+        && data.openingBalance is number
+        && data.openingBalance >= 0
+        && data.openingBalance <= 1000000000000
+        && data.enabled is bool
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidTransaction(data, userId, transactionId) {
+      return data.keys().hasAll([
+          'id',
+          'uid',
+          'referenceNo',
+          'idempotencyKey',
+          'type',
+          'accountId',
+          'accountName',
+          'currency',
+          'category',
+          'tags',
+          'amount',
+          'date',
+          'description',
+          'isRecurring',
+          'recurringFrequency',
+          'nextOccurrenceDate',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'id',
+          'uid',
+          'referenceNo',
+          'idempotencyKey',
+          'type',
+          'accountId',
+          'accountName',
+          'currency',
+          'category',
+          'tags',
+          'amount',
+          'date',
+          'description',
+          'isRecurring',
+          'recurringFrequency',
+          'nextOccurrenceDate',
+          'goalId',
+          'goalName',
+          'originalCurrency',
+          'originalAmount',
+          'exchangeRate',
+          'rateTimestamp',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.id == transactionId
+        && data.uid == userId
+        && data.referenceNo is string
+        && data.referenceNo.size() >= 1
+        && data.referenceNo.size() <= 64
+        && data.idempotencyKey is string
+        && data.idempotencyKey.size() >= 1
+        && data.idempotencyKey.size() <= 128
+        && data.type in ['income', 'expense']
+        && data.accountId is string
+        && data.accountId.size() >= 1
+        && data.accountId.size() <= 80
+        && data.accountName is string
+        && data.accountName.size() >= 1
+        && data.accountName.size() <= 80
+        && isValidCurrency(data.currency)
+        && data.category is string
+        && data.category.size() >= 1
+        && data.category.size() <= 60
+        && data.tags is list
+        && data.tags.size() <= 8
+        && (data.tags.size() == 0 || (data.tags[0] is string && data.tags[0].size() <= 28))
+        && data.amount is number
+        && data.amount > 0
+        && data.amount <= 1000000000000
+        && isValidIsoDate(data.date)
+        && data.description is string
+        && data.description.size() >= 1
+        && data.description.size() <= 160
+        && data.isRecurring is bool
+        && data.recurringFrequency in ['none', 'daily', 'weekly', 'monthly']
+        && data.nextOccurrenceDate is string
+        && data.nextOccurrenceDate.size() <= 10
+        && (!('goalId' in data) || (data.goalId is string && data.goalId.size() <= 128))
+        && (!('goalName' in data) || (data.goalName is string && data.goalName.size() <= 100))
+        && (!('originalCurrency' in data) || (data.originalCurrency is string && data.originalCurrency.size() >= 3 && data.originalCurrency.size() <= 6))
+        && (!('originalAmount' in data) || (data.originalAmount is number && data.originalAmount > 0 && data.originalAmount <= 1000000000000))
+        && (!('exchangeRate' in data) || (data.exchangeRate is number && data.exchangeRate > 0 && data.exchangeRate <= 100000000))
+        && (!('rateTimestamp' in data) || (data.rateTimestamp is string && data.rateTimestamp.size() <= 40))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidBudgetAllocation(data, userId, budgetId) {
+      return data.keys().hasAll([
+          'id',
+          'uid',
+          'category',
+          'monthlyLimit',
+          'enabled',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'id',
+          'uid',
+          'category',
+          'monthlyLimit',
+          'enabled',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.id == budgetId
+        && data.uid == userId
+        && data.category is string
+        && data.category.size() >= 1
+        && data.category.size() <= 60
+        && data.monthlyLimit is number
+        && data.monthlyLimit >= 0
+        && data.monthlyLimit <= 1000000000000
+        && data.enabled is bool
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidSavingsGoal(data, userId, goalId) {
+      return data.keys().hasAll([
+          'id',
+          'uid',
+          'name',
+          'targetAmount',
+          'currentAmount',
+          'currency',
+          'targetDate',
+          'linkedAccountId',
+          'linkedAccountName',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'id',
+          'uid',
+          'name',
+          'targetAmount',
+          'currentAmount',
+          'currency',
+          'targetDate',
+          'linkedAccountId',
+          'linkedAccountName',
+          'linkedCategory',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.id == goalId
+        && data.uid == userId
+        && data.name is string
+        && data.name.size() >= 1
+        && data.name.size() <= 100
+        && data.targetAmount is number
+        && data.targetAmount > 0
+        && data.targetAmount <= 1000000000000
+        && data.currentAmount is number
+        && data.currentAmount >= 0
+        && data.currentAmount <= 1000000000000
+        && isValidCurrency(data.currency)
+        && data.targetDate is string
+        && data.targetDate.size() <= 10
+        && data.linkedAccountId is string
+        && data.linkedAccountId.size() <= 80
+        && data.linkedAccountName is string
+        && data.linkedAccountName.size() <= 80
+        && (!('linkedCategory' in data) || (data.linkedCategory is string && data.linkedCategory.size() <= 60))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidScheduledBill(data, userId, billId) {
+      return data.keys().hasAll([
+          'id',
+          'uid',
+          'title',
+          'amount',
+          'currency',
+          'dueDate',
+          'paid',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'id',
+          'uid',
+          'title',
+          'amount',
+          'currency',
+          'dueDate',
+          'paid',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.id == billId
+        && data.uid == userId
+        && data.title is string
+        && data.title.size() >= 1
+        && data.title.size() <= 100
+        && data.amount is number
+        && data.amount > 0
+        && data.amount <= 1000000000000
+        && isValidCurrency(data.currency)
+        && isValidIsoDate(data.dueDate)
+        && data.paid is bool
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidAccountUpdate(data, userId, updateId) {
+      return data.keys().hasAll([
+          'id',
+          'uid',
+          'timestamp',
+          'kind',
+          'title',
+          'detail',
+          'accountName',
+          'amount',
+          'currency',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'id',
+          'uid',
+          'timestamp',
+          'kind',
+          'title',
+          'detail',
+          'accountName',
+          'amount',
+          'currency',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.id == updateId
+        && data.uid == userId
+        && data.timestamp is string
+        && data.timestamp.size() >= 1
+        && data.timestamp.size() <= 40
+        && data.kind in ['account_linked', 'balance_initialized', 'budget_configured']
+        && data.title is string
+        && data.title.size() >= 1
+        && data.title.size() <= 100
+        && data.detail is string
+        && data.detail.size() <= 160
+        && data.accountName is string
+        && data.accountName.size() <= 80
+        && data.amount is number
+        && data.amount >= 0
+        && data.amount <= 1000000000000
+        && data.currency is string
+        && data.currency.size() <= 10
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidBudgetAlert(data, userId, alertId) {
+      return data.keys().hasAll([
+          'id',
+          'uid',
+          'category',
+          'monthKey',
+          'spentAmount',
+          'budgetLimit',
+          'utilizationPct',
+          'thresholdPct',
+          'currency',
+          'status',
+          'pushDispatched',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'id',
+          'uid',
+          'category',
+          'monthKey',
+          'spentAmount',
+          'budgetLimit',
+          'utilizationPct',
+          'thresholdPct',
+          'currency',
+          'status',
+          'pushDispatched',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.id == alertId
+        && data.uid == userId
+        && data.category is string
+        && data.category.size() >= 1
+        && data.category.size() <= 60
+        && data.monthKey is string
+        && data.monthKey.size() == 7
+        && data.monthKey.matches('^\\d{4}-\\d{2}$')
+        && data.spentAmount is number
+        && data.spentAmount >= 0
+        && data.spentAmount <= 1000000000000
+        && data.budgetLimit is number
+        && data.budgetLimit > 0
+        && data.budgetLimit <= 1000000000000
+        && data.utilizationPct is number
+        && data.utilizationPct >= 0
+        && data.utilizationPct <= 100000
+        && data.thresholdPct is number
+        && data.thresholdPct >= 10
+        && data.thresholdPct <= 100
+        && isValidCurrency(data.currency)
+        && data.status in ['warning_90', 'exceeded_100', 'acknowledged']
+        && data.pushDispatched is bool
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidDebtAccount(data, userId, debtId) {
+      return data.keys().hasAll([
+          'id',
+          'uid',
+          'name',
+          'debtType',
+          'lender',
+          'originalAmount',
+          'remainingBalance',
+          'aprPct',
+          'minimumMonthlyPayment',
+          'currency',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'id',
+          'uid',
+          'name',
+          'debtType',
+          'lender',
+          'originalAmount',
+          'remainingBalance',
+          'aprPct',
+          'minimumMonthlyPayment',
+          'currency',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.id == debtId
+        && data.uid == userId
+        && data.name is string
+        && data.name.size() >= 1
+        && data.name.size() <= 100
+        && data.debtType in ['loan', 'credit_card', 'mortgage', 'other']
+        && data.lender is string
+        && data.lender.size() <= 80
+        && data.originalAmount is number
+        && data.originalAmount > 0
+        && data.originalAmount <= 1000000000000
+        && data.remainingBalance is number
+        && data.remainingBalance >= 0
+        && data.remainingBalance <= 1000000000000
+        && data.aprPct is number
+        && data.aprPct >= 0
+        && data.aprPct <= 100
+        && data.minimumMonthlyPayment is number
+        && data.minimumMonthlyPayment >= 0
+        && data.minimumMonthlyPayment <= 1000000000000
+        && isValidCurrency(data.currency)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidBudgetForecast(data, userId, forecastId) {
+      return data.keys().hasAll([
+          'id',
+          'uid',
+          'currency',
+          'horizonMonths',
+          'modelName',
+          'totalRecommendedMonthlyBudget',
+          'confidenceScore',
+          'riskLevel',
+          'aiSummary',
+          'forecastMonthsJson',
+          'categoryRecommendationsJson',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'id',
+          'uid',
+          'currency',
+          'horizonMonths',
+          'modelName',
+          'totalRecommendedMonthlyBudget',
+          'confidenceScore',
+          'riskLevel',
+          'aiSummary',
+          'forecastMonthsJson',
+          'categoryRecommendationsJson',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.id == forecastId
+        && data.uid == userId
+        && isValidCurrency(data.currency)
+        && data.horizonMonths is number
+        && data.horizonMonths in [3, 6]
+        && data.modelName is string
+        && data.modelName.size() >= 1
+        && data.modelName.size() <= 60
+        && data.totalRecommendedMonthlyBudget is number
+        && data.totalRecommendedMonthlyBudget >= 0
+        && data.totalRecommendedMonthlyBudget <= 1000000000000
+        && data.confidenceScore is number
+        && data.confidenceScore >= 0
+        && data.confidenceScore <= 100
+        && data.riskLevel in ['low', 'moderate', 'elevated']
+        && data.aiSummary is string
+        && data.aiSummary.size() <= 600
+        && data.forecastMonthsJson is string
+        && data.forecastMonthsJson.size() >= 2
+        && data.forecastMonthsJson.size() <= 8000
+        && data.categoryRecommendationsJson is string
+        && data.categoryRecommendationsJson.size() >= 2
+        && data.categoryRecommendationsJson.size() <= 12000
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    // ===============================================================
+    // Collection Match Rules
+    // ===============================================================
+    match /users/{userId} {
+      allow get: if isValidId(userId) && isOwner(userId);
+      allow list: if false;
+      allow create: if isValidId(userId)
+        && isVerifiedOwner(userId)
+        && isValidUserProfile(request.resource.data, userId)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+      allow update: if isValidId(userId)
+        && isVerifiedOwner(userId)
+        && isValidUserProfile(request.resource.data, userId)
+        && hasImmutableOwnerAndCreatedAt(userId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'email',
+          'displayName',
+          'primaryCurrency',
+          'monthlyIncomeTarget',
+          'onboardingCompleted',
+          'budgetThresholdPct',
+          'categoryThresholds',
+          'customCategoriesIncome',
+          'customCategoriesExpense',
+          'savedTags',
+          'updatedAt'
+        ]);
+      allow delete: if false;
+
+      match /accounts/{accountId} {
+        allow read: if isValidId(userId) && isValidId(accountId) && isOwner(userId);
+        allow create: if isValidId(userId)
+          && isValidId(accountId)
+          && isVerifiedOwner(userId)
+          && isValidLinkedAccount(request.resource.data, userId, accountId)
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.updatedAt == request.time;
+        allow update: if isValidId(userId)
+          && isValidId(accountId)
+          && isVerifiedOwner(userId)
+          && isValidLinkedAccount(request.resource.data, userId, accountId)
+          && hasImmutableOwnerAndCreatedAt(userId)
+          && request.resource.data.id == resource.data.id
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'name',
+            'type',
+            'currency',
+            'status',
+            'providerLabel',
+            'openingBalance',
+            'enabled',
+            'updatedAt'
+          ]);
+        allow delete: if isValidId(userId) && isValidId(accountId) && isVerifiedOwner(userId);
+      }
+
+      match /transactions/{transactionId} {
+        allow read: if isValidId(userId) && isValidId(transactionId) && isOwner(userId);
+        allow create: if isValidId(userId)
+          && isValidId(transactionId)
+          && isVerifiedOwner(userId)
+          && isValidTransaction(request.resource.data, userId, transactionId)
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.updatedAt == request.time;
+        allow update: if isValidId(userId)
+          && isValidId(transactionId)
+          && isVerifiedOwner(userId)
+          && isValidTransaction(request.resource.data, userId, transactionId)
+          && hasImmutableOwnerAndCreatedAt(userId)
+          && request.resource.data.id == resource.data.id
+          && request.resource.data.idempotencyKey == resource.data.idempotencyKey
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'category',
+            'tags',
+            'amount',
+            'date',
+            'description',
+            'isRecurring',
+            'recurringFrequency',
+            'nextOccurrenceDate',
+            'goalId',
+            'goalName',
+            'originalCurrency',
+            'originalAmount',
+            'exchangeRate',
+            'rateTimestamp',
+            'updatedAt'
+          ]);
+        allow delete: if isValidId(userId) && isValidId(transactionId) && isVerifiedOwner(userId);
+      }
+
+      match /budgets/{budgetId} {
+        allow read: if isValidId(userId) && isValidId(budgetId) && isOwner(userId);
+        allow create: if isValidId(userId)
+          && isValidId(budgetId)
+          && isVerifiedOwner(userId)
+          && isValidBudgetAllocation(request.resource.data, userId, budgetId)
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.updatedAt == request.time;
+        allow update: if isValidId(userId)
+          && isValidId(budgetId)
+          && isVerifiedOwner(userId)
+          && isValidBudgetAllocation(request.resource.data, userId, budgetId)
+          && hasImmutableOwnerAndCreatedAt(userId)
+          && request.resource.data.id == resource.data.id
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'category',
+            'monthlyLimit',
+            'enabled',
+            'updatedAt'
+          ]);
+        allow delete: if isValidId(userId) && isValidId(budgetId) && isVerifiedOwner(userId);
+      }
+
+      match /savingsGoals/{goalId} {
+        allow read: if isValidId(userId) && isValidId(goalId) && isOwner(userId);
+        allow create: if isValidId(userId)
+          && isValidId(goalId)
+          && isVerifiedOwner(userId)
+          && isValidSavingsGoal(request.resource.data, userId, goalId)
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.updatedAt == request.time;
+        allow update: if isValidId(userId)
+          && isValidId(goalId)
+          && isVerifiedOwner(userId)
+          && isValidSavingsGoal(request.resource.data, userId, goalId)
+          && hasImmutableOwnerAndCreatedAt(userId)
+          && request.resource.data.id == resource.data.id
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'name',
+            'targetAmount',
+            'currentAmount',
+            'currency',
+            'targetDate',
+            'linkedAccountId',
+            'linkedAccountName',
+            'linkedCategory',
+            'updatedAt'
+          ]);
+        allow delete: if isValidId(userId) && isValidId(goalId) && isVerifiedOwner(userId);
+      }
+
+      match /bills/{billId} {
+        allow read: if isValidId(userId) && isValidId(billId) && isOwner(userId);
+        allow create: if isValidId(userId)
+          && isValidId(billId)
+          && isVerifiedOwner(userId)
+          && isValidScheduledBill(request.resource.data, userId, billId)
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.updatedAt == request.time;
+        allow update: if isValidId(userId)
+          && isValidId(billId)
+          && isVerifiedOwner(userId)
+          && isValidScheduledBill(request.resource.data, userId, billId)
+          && hasImmutableOwnerAndCreatedAt(userId)
+          && request.resource.data.id == resource.data.id
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'title',
+            'amount',
+            'currency',
+            'dueDate',
+            'paid',
+            'updatedAt'
+          ]);
+        allow delete: if isValidId(userId) && isValidId(billId) && isVerifiedOwner(userId);
+      }
+
+      match /accountUpdates/{updateId} {
+        allow read: if isValidId(userId) && isValidId(updateId) && isOwner(userId);
+        allow create: if isValidId(userId)
+          && isValidId(updateId)
+          && isVerifiedOwner(userId)
+          && isValidAccountUpdate(request.resource.data, userId, updateId)
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.updatedAt == request.time;
+        allow update: if false;
+        allow delete: if isValidId(userId) && isValidId(updateId) && isVerifiedOwner(userId);
+      }
+
+      match /budgetAlerts/{alertId} {
+        allow read: if isValidId(userId) && isValidId(alertId) && isOwner(userId);
+        allow create: if isValidId(userId)
+          && isValidId(alertId)
+          && isVerifiedOwner(userId)
+          && isValidBudgetAlert(request.resource.data, userId, alertId)
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.updatedAt == request.time;
+        allow update: if isValidId(userId)
+          && isValidId(alertId)
+          && isVerifiedOwner(userId)
+          && isValidBudgetAlert(request.resource.data, userId, alertId)
+          && hasImmutableOwnerAndCreatedAt(userId)
+          && request.resource.data.id == resource.data.id
+          && request.resource.data.category == resource.data.category
+          && request.resource.data.monthKey == resource.data.monthKey
+          && (resource.data.status != 'acknowledged' || request.resource.data.status == 'acknowledged')
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'spentAmount',
+            'budgetLimit',
+            'utilizationPct',
+            'status',
+            'pushDispatched',
+            'updatedAt'
+          ]);
+        allow delete: if isValidId(userId) && isValidId(alertId) && isVerifiedOwner(userId);
+      }
+
+      match /debts/{debtId} {
+        allow read: if isValidId(userId) && isValidId(debtId) && isOwner(userId);
+        allow create: if isValidId(userId)
+          && isValidId(debtId)
+          && isVerifiedOwner(userId)
+          && isValidDebtAccount(request.resource.data, userId, debtId)
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.updatedAt == request.time;
+        allow update: if isValidId(userId)
+          && isValidId(debtId)
+          && isVerifiedOwner(userId)
+          && isValidDebtAccount(request.resource.data, userId, debtId)
+          && hasImmutableOwnerAndCreatedAt(userId)
+          && request.resource.data.id == resource.data.id
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'name',
+            'debtType',
+            'lender',
+            'originalAmount',
+            'remainingBalance',
+            'aprPct',
+            'minimumMonthlyPayment',
+            'currency',
+            'updatedAt'
+          ]);
+        allow delete: if isValidId(userId) && isValidId(debtId) && isVerifiedOwner(userId);
+      }
+
+      match /budgetForecasts/{forecastId} {
+        allow read: if isValidId(userId) && isValidId(forecastId) && isOwner(userId);
+        allow create: if isValidId(userId)
+          && isValidId(forecastId)
+          && isVerifiedOwner(userId)
+          && isValidBudgetForecast(request.resource.data, userId, forecastId)
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.updatedAt == request.time;
+        allow update: if isValidId(userId)
+          && isValidId(forecastId)
+          && isVerifiedOwner(userId)
+          && isValidBudgetForecast(request.resource.data, userId, forecastId)
+          && hasImmutableOwnerAndCreatedAt(userId)
+          && request.resource.data.id == resource.data.id
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'currency',
+            'horizonMonths',
+            'modelName',
+            'totalRecommendedMonthlyBudget',
+            'confidenceScore',
+            'riskLevel',
+            'aiSummary',
+            'forecastMonthsJson',
+            'categoryRecommendationsJson',
+            'updatedAt'
+          ]);
+        allow delete: if isValidId(userId) && isValidId(forecastId) && isVerifiedOwner(userId);
+      }
+    }
+  }
+}

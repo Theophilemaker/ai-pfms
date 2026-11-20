@@ -2,6 +2,7 @@ import { jsPDF } from 'jspdf';
 import type { BudgetAllocation, LinkedAccountConfig } from '../components/OnboardingWizard';
 import type { SavingsGoal } from '../components/BudgetGoals';
 import type { RecordedTransaction } from '../components/TransactionInput';
+import { formatCurrencyAmount } from './exchangeRates';
 
 export type ExportDataset = 'financial_report' | 'transaction_history' | 'budget_summary';
 export type ExportFormat = 'csv' | 'pdf';
@@ -48,13 +49,7 @@ function triggerBlobDownload(content: string, filename: string, mimeType: string
 }
 
 function formatMoney(amount: number, currency: string): string {
-  if (currency === 'USD') {
-    return `${new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount)} USD`;
-  }
-  return `${new Intl.NumberFormat('en-US').format(amount)} RWF`;
+  return formatCurrencyAmount(amount, currency);
 }
 
 function filterTransactionsByDate(
@@ -129,7 +124,7 @@ function generateCsv(
       ['Account Holder', payload.userName, 'Email', payload.userEmail],
       ['Generated At', generatedAt, 'Date Filter', `${payload.fromDate || 'Start'} to ${payload.toDate || 'Present'}`],
       [],
-      ['Date', 'Reference No', 'Type', 'Category', 'Account', 'Description', 'Currency', 'Amount'],
+      ['Date', 'Reference No', 'Type', 'Category', 'Account', 'Description', 'Currency', 'Amount', 'Original Currency', 'Original Amount', 'Exchange Rate'],
       ...filteredTxns.map((tx) => [
         tx.date,
         tx.referenceNo,
@@ -139,6 +134,9 @@ function generateCsv(
         tx.description,
         tx.currency,
         tx.type === 'income' ? tx.amount : -tx.amount,
+        tx.originalCurrency ?? tx.currency,
+        tx.originalAmount ?? tx.amount,
+        tx.exchangeRate ?? 1,
       ]),
     ];
     return toCsvContent(rows);

@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import {
   ArrowRight,
   BarChart3,
@@ -36,6 +37,8 @@ import { InstallModal } from './components/InstallModal';
 import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
 import { useOnlineStatus, usePWAInstall } from './hooks/usePWAInstall';
 import { translations, type Locale, type ThemeMode } from './i18n/translations';
+import { auth } from './lib/firebase';
+import { ensureUserProfile } from './services/firestoreSync';
 
 export default function App() {
   const [locale, setLocale] = useState<Locale>(() => {
@@ -67,6 +70,43 @@ export default function App() {
   const isOnline = useOnlineStatus();
   const pwa = usePWAInstall();
   const t = translations[locale];
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (!firebaseUser) {
+        setAuthenticatedUser(null);
+        return;
+      }
+
+      const email = firebaseUser.email ?? 'member@aipfms.local';
+      const displayName =
+        firebaseUser.displayName?.trim() ||
+        email.split('@')[0] ||
+        'AI-PFMS Member';
+
+      setAuthenticatedUser({
+        uid: firebaseUser.uid,
+        name: displayName,
+        email,
+        isNewUser: false,
+      });
+
+      void ensureUserProfile({
+        uid: firebaseUser.uid,
+        email,
+        displayName,
+      }).then(({ isNewProfile, profile }) => {
+        setAuthenticatedUser({
+          uid: firebaseUser.uid,
+          name: profile.displayName || displayName,
+          email: profile.email || email,
+          isNewUser: isNewProfile,
+        });
+      });
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // Apply light / dark / system theme to <html>
   useEffect(() => {
@@ -203,7 +243,10 @@ export default function App() {
           isInstalled={pwa.isInstalled}
           isOnline={isOnline}
           onInstallClick={handleInstallAction}
-          onLogout={() => setAuthenticatedUser(null)}
+          onLogout={() => {
+            void signOut(auth);
+            setAuthenticatedUser(null);
+          }}
         />
 
         {!isOnline && (
@@ -1011,13 +1054,12 @@ export default function App() {
         onInstall={pwa.triggerInstall}
       />
 
-      {/* Authentication Placeholder Modal */}
+      {/* Authentication Modal */}
       <AuthPlaceholderModal
         mode={authModalMode}
         onSwitchMode={setAuthModalMode}
         onClose={() => setAuthModalMode(null)}
-        onLoginSuccess={(loggedInUser) => {
-          setAuthenticatedUser(loggedInUser);
+        onLoginSuccess={() => {
           setAuthModalMode(null);
         }}
         locale={locale}

@@ -1,6 +1,6 @@
 {
   "name": "AI-PFMS",
   "description": "AI Personal Finance Management System — Enterprise personal and family financial management SaaS with double-entry accounting, C++17 analytics, and PWA installability.",
-  "requestFramePermissions": [],
+  "requestFramePermissions": ["camera"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

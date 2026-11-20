@@ -1,6 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { AlertTriangle, ArrowRight, BellRing, SlidersHorizontal, X } from 'lucide-react';
+import {
+  AlertTriangle,
+  ArrowRight,
+  Bell,
+  BellRing,
+  CheckCircle2,
+  RotateCcw,
+  SlidersHorizontal,
+  X,
+} from 'lucide-react';
 import { translations, type Locale } from '../i18n/translations';
+import type { BudgetAlertDoc } from '../services/firestoreSync';
 import type { BudgetAllocation } from './OnboardingWizard';
 import type { RecordedTransaction } from './TransactionInput';
 
@@ -18,6 +28,7 @@ interface BudgetThresholdNotifierProps {
   transactions: RecordedTransaction[];
   budgets: BudgetAllocation[];
   thresholdPct: number;
+  categoryThresholds?: Record<string, number>;
   primaryCurrency: 'RWF' | 'USD';
   locale: Locale;
   formatAmount: (amount: number, currency: string) => string;
@@ -29,6 +40,7 @@ export function BudgetThresholdNotifier({
   transactions,
   budgets,
   thresholdPct,
+  categoryThresholds = {},
   primaryCurrency,
   locale,
   formatAmount,
@@ -41,9 +53,10 @@ export function BudgetThresholdNotifier({
   const triggeredKeysRef = useRef<Set<string>>(new Set());
 
   const breachedCategories = useMemo(() => {
-    const safeThreshold = Math.min(100, Math.max(10, Math.round(thresholdPct)));
+    const defaultThreshold = Math.min(100, Math.max(10, Math.round(thresholdPct)));
+    const currentMonthKey = new Date().toISOString().slice(0, 7);
     const expensesByCategory = transactions
-      .filter((tx) => tx.type === 'expense')
+      .filter((tx) => tx.type === 'expense' && tx.date.startsWith(currentMonthKey))
       .reduce<Record<string, number>>((acc, tx) => {
         acc[tx.category] = (acc[tx.category] ?? 0) + tx.amount;
         return acc;
@@ -54,17 +67,19 @@ export function BudgetThresholdNotifier({
       .map((b) => {
         const spent = expensesByCategory[b.category] ?? 0;
         const pct = Math.round((spent / b.monthlyLimit) * 100);
+        const rawCatThreshold = categoryThresholds[b.category] ?? defaultThreshold;
+        const catThreshold = Math.min(100, Math.max(10, Math.round(rawCatThreshold)));
         return {
           category: b.category,
           spent,
           limit: b.monthlyLimit,
           pct,
-          thresholdPct: safeThreshold,
+          thresholdPct: catThreshold,
           isExceeded: pct >= 100,
         };
       })
-      .filter((item) => item.pct >= safeThreshold);
-  }, [transactions, budgets, thresholdPct]);
+      .filter((item) => item.pct >= item.thresholdPct);
+  }, [transactions, budgets, thresholdPct, categoryThresholds]);
 
   useEffect(() => {
     const newlyTriggered: BudgetThresholdToastItem[] = [];
@@ -160,12 +175,18 @@ export function BudgetThresholdNotifier({
                 {formatAmount(toast.limit, primaryCurrency)}
               </p>
 
-              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-[#162235]">
+              <div className="relative mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-[#162235]">
                 <div
                   className={`h-full rounded-full transition-all ${
                     toast.isExceeded ? 'bg-rose-500' : 'bg-amber-500'
                   }`}
                   style={{ width: `${Math.min(100, toast.pct)}%` }}
+                />
+                <span
+                  aria-hidden="true"
+                  title={`${bn.thresholdMarkerPrefix} ${toast.thresholdPct}%`}
+                  className="absolute top-0 bottom-0 w-0.5 bg-slate-900/60 dark:bg-white/80"
+                  style={{ left: `${Math.min(99, Math.max(1, toast.thresholdPct))}%` }}
                 />
               </div>
 
@@ -200,8 +221,19 @@ export function BudgetThresholdNotifier({
 interface BudgetThresholdControlProps {
   thresholdPct: number;
   monitoredCount: number;
+  budgets?: BudgetAllocation[];
+  expensesByCategory?: Record<string, number>;
+  categoryThresholds?: Record<string, number>;
+  onChangeCategoryThreshold?: (category: string, pct: number | null) => void;
   locale: Locale;
   onChange: (nextPct: number) => void;
+  pushPermission?: NotificationPermission | 'unsupported';
+  onEnablePush?: () => void;
+  onRunMonitorNow?: () => void;
+  isMonitoringScan?: boolean;
+  firestoreAlerts?: BudgetAlertDoc[];
+  onAcknowledgeAlert?: (alertId: string) => void;
+  formatAmount?: (amount: number, currency: string) => string;
 }
 
 const PRESET_THRESHOLDS = [50, 75, 80, 90, 100];
@@ -209,8 +241,19 @@ const PRESET_THRESHOLDS = [50, 75, 80, 90, 100];
 export function BudgetThresholdControl({
   thresholdPct,
   monitoredCount,
+  budgets = [],
+  expensesByCategory = {},
+  categoryThresholds = {},
+  onChangeCategoryThreshold,
   locale,
   onChange,
+  pushPermission = 'default',
+  onEnablePush,
+  onRunMonitorNow,
+  isMonitoringScan = false,
+  firestoreAlerts = [],
+  onAcknowledgeAlert,
+  formatAmount,
 }: BudgetThresholdControlProps) {
   const bn = translations[locale].dashboard.budgetNotifier;
 
@@ -273,6 +316,208 @@ export function BudgetThresholdControl({
             </span>
           </label>
         </div>
+      </div>
+
+      {/* Category-Specific Predefined Threshold Overrides */}
+      {budgets.length > 0 && onChangeCategoryThreshold && (
+        <div className="mt-4 border-t border-slate-100 pt-4 dark:border-[#263449]">
+          <p className="text-xs font-bold text-slate-800 dark:text-slate-100">
+            {bn.categoryRulesTitle}
+          </p>
+          <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
+            {bn.categoryRulesDesc}
+          </p>
+
+          <div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+            {budgets.map((b) => {
+              const hasOverride = typeof categoryThresholds[b.category] === 'number';
+              const effectiveThreshold = hasOverride
+                ? categoryThresholds[b.category]
+                : thresholdPct;
+              const spent = expensesByCategory[b.category] ?? 0;
+              const usedPct =
+                b.monthlyLimit > 0 ? Math.round((spent / b.monthlyLimit) * 100) : 0;
+              const isAlerting = usedPct >= effectiveThreshold && b.monthlyLimit > 0;
+
+              return (
+                <div
+                  key={b.category}
+                  className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2 text-xs ${
+                    isAlerting
+                      ? 'border-amber-300 bg-amber-50/70 dark:border-amber-500/40 dark:bg-amber-950/20'
+                      : 'border-slate-200 bg-slate-50/70 dark:border-[#263449] dark:bg-[#162235]/60'
+                  }`}
+                >
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold text-slate-800 dark:text-slate-100">
+                      {b.category}
+                    </p>
+                    <p className="font-mono-num text-[10px] text-slate-500 dark:text-slate-400">
+                      {bn.currentUsageLabel}: {usedPct}% ·{' '}
+                      {hasOverride ? bn.customRuleLabel : bn.defaultRuleLabel}
+                    </p>
+                  </div>
+
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    <select
+                      aria-label={`${b.category} ${bn.thresholdLabel}`}
+                      value={effectiveThreshold}
+                      onChange={(e) =>
+                        onChangeCategoryThreshold(b.category, Number(e.target.value))
+                      }
+                      className="font-mono-num rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-800 focus:border-[#7C3AED] focus:outline-none dark:border-[#263449] dark:bg-[#0B1220] dark:text-slate-100"
+                    >
+                      {[25, 50, 60, 70, 75, 80, 85, 90, 95, 100].map((val) => (
+                        <option key={val} value={val}>
+                          {val}%
+                        </option>
+                      ))}
+                    </select>
+                    {hasOverride && (
+                      <button
+                        type="button"
+                        onClick={() => onChangeCategoryThreshold(b.category, null)}
+                        title={bn.resetRuleBtn}
+                        aria-label={`${bn.resetRuleBtn}: ${b.category}`}
+                        className="rounded p-1 text-slate-400 hover:bg-slate-200/70 hover:text-slate-700 dark:hover:bg-[#263449] dark:hover:text-slate-200"
+                      >
+                        <RotateCcw className="h-3 w-3" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Firestore >90% Monthly Spending Monitor & Web Push Controls */}
+      <div className="mt-4 border-t border-slate-100 pt-4 dark:border-[#263449]">
+        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+          <div className="flex items-start gap-2.5">
+            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
+              <Bell className="h-4 w-4" />
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-xs font-bold text-slate-800 dark:text-slate-100">
+                  {bn.pushTitle}
+                </p>
+                {pushPermission === 'granted' && (
+                  <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                    {bn.pushEnabledBadge}
+                  </span>
+                )}
+                {pushPermission === 'denied' && (
+                  <span className="rounded-md bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-800 dark:bg-rose-950/60 dark:text-rose-300">
+                    {bn.pushBlockedBadge}
+                  </span>
+                )}
+                {pushPermission === 'unsupported' && (
+                  <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:bg-[#162235] dark:text-slate-400">
+                    {bn.pushUnsupportedBadge}
+                  </span>
+                )}
+              </div>
+              <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
+                {bn.pushDesc}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            {pushPermission === 'default' && onEnablePush && (
+              <button
+                type="button"
+                onClick={onEnablePush}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-[#7C3AED] px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-[#6D28D9]"
+              >
+                <BellRing className="h-3.5 w-3.5" />
+                <span>{bn.pushEnableBtn}</span>
+              </button>
+            )}
+            {onRunMonitorNow && (
+              <button
+                type="button"
+                disabled={isMonitoringScan}
+                onClick={onRunMonitorNow}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-60 dark:border-[#263449] dark:bg-[#162235] dark:text-slate-200 dark:hover:bg-[#1E2D45]"
+              >
+                <span>{bn.pushScanNowBtn}</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {firestoreAlerts.length > 0 && (
+          <div className="mt-3 space-y-2">
+            <p className="text-[11px] font-bold text-slate-700 dark:text-slate-200">
+              {bn.pushSyncedAlertsTitle}
+            </p>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {firestoreAlerts.slice(0, 6).map((alert) => {
+                const isExceeded = alert.status === 'exceeded_100' || alert.utilizationPct >= 100;
+                const isAck = alert.status === 'acknowledged';
+                return (
+                  <div
+                    key={alert.id}
+                    className={`flex items-center justify-between gap-3 rounded-xl border px-3 py-2 text-xs ${
+                      isAck
+                        ? 'border-slate-200 bg-slate-50/70 dark:border-[#263449] dark:bg-[#162235]/50'
+                        : isExceeded
+                          ? 'border-rose-300 bg-rose-50/70 dark:border-rose-500/40 dark:bg-rose-950/20'
+                          : 'border-amber-300 bg-amber-50/70 dark:border-amber-500/40 dark:bg-amber-950/20'
+                    }`}
+                  >
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="truncate font-bold text-slate-900 dark:text-white">
+                          {alert.category}
+                        </span>
+                        <span className="font-mono-num text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+                          {alert.monthKey} · {alert.utilizationPct}%
+                        </span>
+                        <span
+                          className={`rounded px-1.5 py-0.5 text-[10px] font-semibold ${
+                            alert.pushDispatched
+                              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300'
+                              : 'bg-slate-200 text-slate-700 dark:bg-[#263449] dark:text-slate-300'
+                          }`}
+                        >
+                          {alert.pushDispatched ? bn.pushDispatchedLabel : bn.pushLoggedLabel}
+                        </span>
+                      </div>
+                      {formatAmount && (
+                        <p className="font-mono-num mt-0.5 text-[11px] text-slate-600 dark:text-slate-300">
+                          {formatAmount(alert.spentAmount, alert.currency)} /{' '}
+                          {formatAmount(alert.budgetLimit, alert.currency)}
+                        </p>
+                      )}
+                    </div>
+
+                    {isAck ? (
+                      <span className="inline-flex shrink-0 items-center gap-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
+                        <CheckCircle2 className="h-3.5 w-3.5" />
+                        <span>{bn.pushAcknowledgedLabel}</span>
+                      </span>
+                    ) : (
+                      onAcknowledgeAlert && (
+                        <button
+                          type="button"
+                          onClick={() => onAcknowledgeAlert(alert.id)}
+                          className="shrink-0 rounded-lg border border-slate-200 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-50 dark:border-[#263449] dark:bg-[#0B1220] dark:text-slate-200 dark:hover:bg-[#162235]"
+                        >
+                          {bn.pushAcknowledgeBtn}
+                        </button>
+                      )
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
